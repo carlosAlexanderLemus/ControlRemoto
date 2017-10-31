@@ -1,7 +1,9 @@
 package lemus.com.bast_software.controlremoto;
 
+import android.app.FragmentManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -34,6 +36,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Añadimos el evento importante
         navigationView.setNavigationItemSelectedListener(this);
+
+        // Obtenemos la instancia del fragment
+        DeviceFragment devicefragment = new DeviceFragment();
+        // Preparamos el contenedor
+        getSupportFragmentManager().beginTransaction().add(R.id.contenedor_fragment, devicefragment);
     }
 
 
@@ -72,7 +79,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (id)
         {
             case R.id.item_device:
-                Toast.makeText(this, "Quiere manejar los dispositivos", Toast.LENGTH_SHORT).show();
+                // Obtenemos la instancia del fragment
+                DeviceFragment devicefragment = new DeviceFragment();
+                // Fragmento
+                FragmentTransaction fragmenttransaction = getSupportFragmentManager().beginTransaction();
+                // Preparamos el contenedor
+                fragmenttransaction.replace(R.id.contenedor_fragment, devicefragment);
+                // Validamos el cambio
+                fragmenttransaction.commit();
                 break;
         }
 
