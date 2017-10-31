@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
@@ -59,8 +60,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Obtenemos el id del item seleccionado
         int id = item.getItemId();
 
-
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -68,6 +67,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Obtemos el id del item
         int id = item.getItemId();
+
+        // Comprobamos que elementos es
+        switch (id)
+        {
+            case R.id.item_device:
+                Toast.makeText(this, "Quiere manejar los dispositivos", Toast.LENGTH_SHORT).show();
+                break;
+        }
 
         // Cerrramos el panel
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_main);
