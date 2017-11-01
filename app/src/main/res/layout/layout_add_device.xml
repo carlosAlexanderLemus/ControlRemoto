@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/textView"
+            style="@style/TextViewTituloCentrado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/title_new_device" />
+
+        <TextView
+            android:id="@+id/tv_name_device"
+            style="@style/TextViewInformacionDialog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_border"
+            android:layout_marginRight="@dimen/margin_border"
+            android:layout_marginTop="@dimen/marfin_border_top"
+            android:text="@string/text_name_device" />
+
+        <EditText
+            android:id="@+id/et_name_device"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_border"
+            android:layout_marginRight="@dimen/margin_border"
+            android:ems="10"
+            android:hint="@string/text_name_device_default"
+            android:inputType="textPersonName"
+            android:textSize="@dimen/text_size_information" />
+
+        <TextView
+            android:id="@+id/tv_ip_device"
+            style="@style/TextViewInformacionDialog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_border"
+            android:layout_marginRight="@dimen/margin_border"
+            android:layout_marginTop="@dimen/marfin_border_top"
+            android:text="@string/text_ip_device" />
+
+        <EditText
+            android:id="@+id/et_ip_device"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_border"
+            android:layout_marginRight="@dimen/margin_border"
+            android:ems="10"
+            android:hint="@string/text_ip_device_default"
+            android:inputType="numberDecimal"
+            android:textSize="@dimen/text_size_information" />
+
+        <TextView
+            android:id="@+id/tv_port_device"
+            style="@style/TextViewInformacionDialog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_border"
+            android:layout_marginRight="@dimen/margin_border"
+            android:layout_marginTop="@dimen/marfin_border_top"
+            android:text="@string/text_port_device" />
+
+        <EditText
+            android:id="@+id/et_port_device"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_border"
+            android:layout_marginRight="@dimen/margin_border"
+            android:ems="10"
+            android:hint="@string/port_default"
+            android:inputType="number"
+            android:textSize="@dimen/text_size_information" />
+
+        <TextView
+            android:id="@+id/tv_pass_device"
+            style="@style/TextViewInformacionDialog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_border"
+            android:layout_marginRight="@dimen/margin_border"
+            android:layout_marginTop="@dimen/marfin_border_top"
+            android:text="@string/text_pass_device" />
+
+        <EditText
+            android:id="@+id/et_pass_device"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_border"
+            android:layout_marginRight="@dimen/margin_border"
+            android:ems="10"
+            android:inputType="textPassword"
+            android:textSize="@dimen/text_size_information" />
+
+        <TextView
+            android:id="@+id/tv_pass_confirmate_device"
+            style="@style/TextViewInformacionDialog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_border"
+            android:layout_marginRight="@dimen/margin_border"
+            android:layout_marginTop="@dimen/marfin_border_top"
+            android:text="@string/text_pass_confirmed_device_default" />
+
+        <EditText
+            android:id="@+id/et_pass_confirmate_device"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_border"
+            android:layout_marginRight="@dimen/margin_border"
+            android:ems="10"
+            android:inputType="textPassword"
+            android:textSize="@dimen/text_size_information" />
+
+        <CheckBox
+            android:id="@+id/cb_guardar_dispositivo"
+            style="@style/CheckBoxDialogElement"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/text_save_device" />
+
+        <CheckBox
+            android:id="@+id/cb_conectar_dispositivo"
+            style="@style/CheckBoxDialogElement"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/text_conect_device" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/marfin_border_top"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_conectar_dispositivo"
+                style="@style/MyButtonDialog"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/buttomBackgroud"
+                android:text="@string/conectar"
+                android:textColor="@android:color/white" />
+
+            <Button
+                android:id="@+id/btn_cancelar_agregar_dispositivos"
+                style="@style/MyButtonDialog"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@android:string/cancel" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

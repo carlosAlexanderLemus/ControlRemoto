@@ -3,4 +3,7 @@
     <dimen name="height_header_nav_menu">160dp</dimen>
     <dimen name="height_device_connected">120dp</dimen>
     <dimen name="height_bottom_menu">100dp</dimen>
+    <dimen name="text_size_information">18sp</dimen>
+    <dimen name="margin_border">20dp</dimen>
+    <dimen name="marfin_border_top">15dp</dimen>
 </resources>
