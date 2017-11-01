@@ -2,6 +2,14 @@
     <string name="app_name">ControlRemoto</string>
 
     <string name="option_device">Dispositivos</string>
+    <string name="option_add_device">Añadir dispositivo</string>
+    <string name="option_remenber_device">Recordar este dispositivo</string>
+
+    <string name="ip_address">IP:</string>
+    <string name="port">Puerto:</string>
+
+    <string name="ip_address_default">127.0.0.1</string>
+    <string name="port_default">1011</string>
 
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
