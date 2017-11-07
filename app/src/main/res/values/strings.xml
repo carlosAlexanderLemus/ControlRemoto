@@ -21,7 +21,7 @@
     <string name="port">Puerto:</string>
 
     <string name="ip_address_default">127.0.0.1</string>
-    <string name="port_default">1011</string>
+    <string name="port_default">11000</string>
 
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
