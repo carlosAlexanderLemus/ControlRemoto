@@ -1,7 +1,6 @@
 package lemus.com.bast_software.controlremoto.ConexionRed;
 
 import android.app.Activity;
-import android.content.Context;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -17,28 +16,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-
-import android.app.Activity;
-import android.os.Handler;
-import android.util.Log;
-import android.widget.Toast;
-
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Objects;
-import java.util.logging.LogRecord;
 
 /**
  * Created by mekaku on 03/10/2017.
@@ -185,10 +162,19 @@ public class Servidores {
                                         archivos.remove(0);
                                         archivos.remove(0);
 
+                                        // El resultado
+                                        ResultadoTexto resultadoTexto;
+
+                                        // Si no posee lineas de codigos
+                                        if (archivos.size() > 0)
+                                            resultadoTexto = new ResultadoTexto(accion);
+                                        else
+                                            resultadoTexto = new ResultadoTexto(accion, archivos);
+
                                         // Si el actuador es nulo
                                         if (actuadorDeTexto != null)
                                             // El actuadoe
-                                            actuadorDeTexto.RecibirMensaje(accion, archivos);
+                                            actuadorDeTexto.RecibirMensaje(resultadoTexto);
 
                                         break;
                                 }

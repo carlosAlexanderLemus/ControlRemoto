@@ -5,9 +5,11 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,12 +18,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.util.List;
-import java.util.zip.Inflater;
-
 import lemus.com.bast_software.controlremoto.ConexionRed.ActuadorDeTexto;
 import lemus.com.bast_software.controlremoto.ConexionRed.Clientes;
 import lemus.com.bast_software.controlremoto.ConexionRed.InformacionConexion;
+import lemus.com.bast_software.controlremoto.ConexionRed.ResultadoTexto;
 import lemus.com.bast_software.controlremoto.ConexionRed.Servidores;
 
 
@@ -33,6 +33,11 @@ public class DeviceFragment extends Fragment{
     // Informacion del servidor
     Servidores servidor;
 
+    // Manejo del tab
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+    private DeviceListViewPageAdapter deviceListViewPageAdapter;
+
     public DeviceFragment() {
         // Required empty public constructor
     }
@@ -42,6 +47,87 @@ public class DeviceFragment extends Fragment{
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_device, container, false);
         final LayoutInflater layoutInflater = getLayoutInflater(savedInstanceState);
+
+        // Establecemos el tab layout
+        tabLayout = (TabLayout)view.findViewById(R.id.tab_menu_device);
+        viewPager = (ViewPager)view.findViewById(R.id.view_menu_device);
+
+        deviceListViewPageAdapter = new DeviceListViewPageAdapter(getFragmentManager());
+        viewPager.setAdapter(deviceListViewPageAdapter);
+
+        // Opciones a escoger
+        final TabLayout.Tab tab_opcion_all_device = tabLayout.newTab();
+        final TabLayout.Tab tab_opcion_most_use_device = tabLayout.newTab();
+        final TabLayout.Tab tab_opcion_star_device = tabLayout.newTab();
+
+        // Establecemos los iconos
+        tab_opcion_all_device.setIcon(R.mipmap.ic_all_device_list_select);
+        tab_opcion_most_use_device.setIcon(R.drawable.ic_more_used_device);
+        tab_opcion_star_device.setIcon(R.drawable.ic_favorites_device);
+
+        // Añadimos la tab
+        tabLayout.addTab(tab_opcion_all_device, 0);
+        tabLayout.addTab(tab_opcion_most_use_device, 1);
+        tabLayout.addTab(tab_opcion_star_device, 2);
+
+        tabLayout.setTabTextColors(ContextCompat.getColorStateList(getContext(), R.color.tab_selector));
+        tabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(getContext(), R.color.colorAcentTab));
+
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener(){
+
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                switch (position){
+                    case 0:
+                        tab_opcion_all_device.setIcon(R.mipmap.ic_all_device_list_select);
+                        tab_opcion_most_use_device.setIcon(R.drawable.ic_more_used_device);
+                        tab_opcion_star_device.setIcon(R.drawable.ic_favorites_device);
+                        break;
+
+                    case 1:
+                        tab_opcion_all_device.setIcon(R.drawable.ic_all_device_list);
+                        tab_opcion_most_use_device.setIcon(R.mipmap.ic_more_used_device_select);
+                        tab_opcion_star_device.setIcon(R.drawable.ic_favorites_device);
+                        break;
+
+                    case  2:
+                        tab_opcion_all_device.setIcon(R.drawable.ic_all_device_list);
+                        tab_opcion_most_use_device.setIcon(R.drawable.ic_more_used_device);
+                        tab_opcion_star_device.setIcon(R.mipmap.ic_favorites_device_select);
+                        break;
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
 
         // Inicializamos el servidor
         servidor = new Servidores(getActivity());
@@ -88,9 +174,9 @@ public class DeviceFragment extends Fragment{
                         // Establecemos el evento
                         servidor.establecerActuadorDeTexto(new ActuadorDeTexto() {
                             @Override
-                            public void RecibirMensaje(String tipoDeAccion, List<String> lineas) {
+                            public void RecibirMensaje(ResultadoTexto resultado) {
                                 // Probamos los distintos casos
-                                switch (tipoDeAccion)
+                                switch (resultado.TipoDeAccion())
                                 {
                                     // Conexion exitosa
                                     case InformacionConexion.MOTIVOCONEXION_REPUESTAEXITOSA:
@@ -103,6 +189,12 @@ public class DeviceFragment extends Fragment{
                                     case  InformacionConexion.MOTIVOCONEXION_REPUESTAFRACASO:
                                         // Obtenemos la repuesta
                                         Toast.makeText(getContext(), "Fracaso de conexion", Toast.LENGTH_SHORT).show();
+
+                                        break;
+
+                                    case InformacionConexion.MOTIVOCONEXION_REPUESTACONEXIONEXISTENTE:
+                                        // Repuesta ante una conexion ya existente
+                                        Toast.makeText(getContext(), "Ya hay algun dispositivo conectado", Toast.LENGTH_SHORT).show();
 
                                         break;
                                 }
