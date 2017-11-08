@@ -18,6 +18,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 import lemus.com.bast_software.controlremoto.ConexionRed.ActuadorDeTexto;
 import lemus.com.bast_software.controlremoto.ConexionRed.Clientes;
 import lemus.com.bast_software.controlremoto.ConexionRed.InformacionConexion;

@@ -6,4 +6,5 @@
     <dimen name="text_size_information">18sp</dimen>
     <dimen name="margin_border">20dp</dimen>
     <dimen name="marfin_border_top">15dp</dimen>
+    <dimen name="height_item_device">70dp</dimen>
 </resources>
