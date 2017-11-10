@@ -32,4 +32,7 @@
     <string name="conectar">Conectar</string>
 
     <string name="base_de_datos">DBControlRemoto</string>
+
+    <string name="titulo_seleccionar_dispositivo">¿Desea seleccionar el dispositvo?</string>
+
 </resources>

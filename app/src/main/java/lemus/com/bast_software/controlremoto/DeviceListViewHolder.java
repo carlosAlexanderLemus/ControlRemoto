@@ -1,7 +1,10 @@
 package lemus.com.bast_software.controlremoto;
 
+import android.content.Context;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -69,7 +72,25 @@ public class DeviceListViewHolder extends RecyclerView.ViewHolder implements Vie
         // Si la vista es igual a la card
         if (v.equals(card_view)){
             // En caso que queramos seleccionar el dispositivo
+            Context context = v.getContext();
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
+            // Obtenemos el layout inlfater
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View layout = inflater.inflate(R.layout.select_device_item_layout, null);
+
+            // Obtenemos los texto
+            TextView tv_name = (TextView)layout.findViewById(R.id.tv_selected_name_device);
+            TextView tv_ip = (TextView)layout.findViewById(R.id.tv_selected_ip_device);
+
+            tv_name.setText(dispositivosIP.getNombre());
+            tv_ip.setText(dispositivosIP.getIP());
+
+            builder.setView(layout);
+
+            final AlertDialog dialog = builder.create();
+
+            dialog.show();
         }
         else if (v.equals(iv_favorite))
         {
