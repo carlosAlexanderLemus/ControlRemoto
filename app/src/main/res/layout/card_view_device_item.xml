@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/height_item_device"
     android:layout_margin="5dp"
-    app:cardCornerRadius="5dp">
+    app:cardCornerRadius="5dp"
+    >
 
 
     <LinearLayout
@@ -41,7 +42,8 @@
                     android:gravity="center"
                     android:text="TextView"
                     android:textAllCaps="true"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    />
 
                 <TextView
                     android:id="@+id/tv_device_ip_item"

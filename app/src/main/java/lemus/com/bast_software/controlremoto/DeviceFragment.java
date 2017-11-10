@@ -15,13 +15,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.Checkable;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import lemus.com.bast_software.controlremoto.ConexionRed.ActuadorDeTexto;
 import lemus.com.bast_software.controlremoto.ConexionRed.Clientes;
+import lemus.com.bast_software.controlremoto.ConexionRed.DispositivoConexion;
 import lemus.com.bast_software.controlremoto.ConexionRed.InformacionConexion;
 import lemus.com.bast_software.controlremoto.ConexionRed.ResultadoTexto;
 import lemus.com.bast_software.controlremoto.ConexionRed.Servidores;
@@ -38,7 +42,12 @@ public class DeviceFragment extends Fragment{
     // Manejo del tab
     private TabLayout tabLayout;
     private ViewPager viewPager;
+
+    // Adaptador
     private DeviceListViewPageAdapter deviceListViewPageAdapter;
+
+    private TextView tv_ip_address_val;
+    private TextView tv_puerto_val;
 
     public DeviceFragment() {
         // Required empty public constructor
@@ -54,6 +63,10 @@ public class DeviceFragment extends Fragment{
         tabLayout = (TabLayout)view.findViewById(R.id.tab_menu_device);
         viewPager = (ViewPager)view.findViewById(R.id.view_menu_device);
 
+        tv_ip_address_val = (TextView)view.findViewById(R.id.tv_ip_adress_val);
+        tv_puerto_val = (TextView)view.findViewById(R.id.tv_port_val);
+
+        // Iniciamos el dispositivo
         deviceListViewPageAdapter = new DeviceListViewPageAdapter(getFragmentManager());
         viewPager.setAdapter(deviceListViewPageAdapter);
 
@@ -166,6 +179,8 @@ public class DeviceFragment extends Fragment{
                         final EditText et_nombrePC = (EditText)view_layout.findViewById(R.id.et_name_device);
                         final EditText et_passwordPC1 = (EditText)view_layout.findViewById(R.id.et_pass_device);
                         final EditText et_passwordPC2 = (EditText)view_layout.findViewById(R.id.et_pass_confirmate_device);
+                        final CheckBox cbx_recordar = (CheckBox)view_layout.findViewById(R.id.cb_guardar_dispositivo);
+                        final CheckBox cbx_conectar = (CheckBox)view_layout.findViewById(R.id.cb_conectar_dispositivo);
 
                         // Lo establecemos como el layout
                         builder.setView(view_layout);
@@ -182,8 +197,49 @@ public class DeviceFragment extends Fragment{
                                 {
                                     // Conexion exitosa
                                     case InformacionConexion.MOTIVOCONEXION_REPUESTAEXITOSA:
-                                        // Obtenemos la repuesta
+                                        // Obtenemos la conexion
+                                        DispositivoConexion.Conectar conectar = DispositivoConexion.UltimaConexion;
+
                                         Toast.makeText(getContext(), "Conexion exitosa", Toast.LENGTH_SHORT).show();
+
+                                        // Si la conexion no es nula
+                                        if (conectar != null)
+                                        {
+                                            // Si fuimos capaces de enviar el mensaje
+                                            if (conectar.isEnvioMensaje())
+                                            {
+                                                // Imprimimos el resultado en la parte superor
+                                                tv_ip_address_val.setText(conectar.getIP());
+                                                tv_puerto_val.setText(conectar.getPuerto());
+
+                                                // Si queremos  recordar el dispositivo
+                                                if (cbx_recordar.isChecked()){
+                                                    // Añadimos el item a la base de datos
+                                                    if (DispositivoConexion.GuardarDispositivo(getContext(), conectar))
+                                                    {
+                                                        // Obtenemos el ultimo dispositivo
+                                                        DispositivosIP dispositivosIP = DispositivoConexion.ObtenerUltimoDispositivo(getContext());
+
+                                                        // Comprobamos que no haya error
+                                                        if  (dispositivosIP != null)
+                                                        {
+                                                            // Obtenemos el fragment
+                                                            DeviceListFragment deviceListFragment = deviceListViewPageAdapter.ObtenerFragmenDeseado(DeviceListViewPageAdapter.TODOS_LOS_DISPOSITIVOS);
+                                                            // Dispositivo Alamacenado con exito
+                                                            deviceListFragment.AñadirDispositivo(dispositivosIP);
+                                                            // Mostramos el mensaje
+                                                            Toast.makeText(getContext(), "Dispositivo almacenado con exito", Toast.LENGTH_SHORT).show();
+                                                        }
+                                                        else
+                                                            Toast.makeText(getContext(), "Error: no se puede recuperar los datos del dispositivo", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                    else
+                                                        Toast.makeText(getContext(), "Error: no se ha podido almacenar los datos", Toast.LENGTH_SHORT).show();
+
+                                                }
+                                            }
+                                        }
+
                                         // Quitamos el cuadro de dialogo
                                         alertDialog.dismiss();
                                         break;
@@ -207,52 +263,88 @@ public class DeviceFragment extends Fragment{
                         btn_acepat.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                            // Obtenemos los recursos
-                            Resources resources = getResources();
+                                // Valores del formulario
+                                String IP_device = et_direccionIP.getText().toString();
+                                String puerto_device = et_puerto.getText().toString();
+                                String nombre_device = et_nombrePC.getText().toString();
+                                String password1_device = et_passwordPC1.getText().toString();
+                                String password2_device = et_passwordPC2.getText().toString();
 
-                            // Obtenemos el puerto por defecto
-                            String puerto = resources.getString(R.string.port_default);
+                                boolean conectar_con_el_dispositivo = cbx_conectar.isChecked();
+                                boolean recordar_dispositivo = cbx_recordar.isChecked();
 
-                            // Si el EditText no esta vacio podemos hacer la conexion
-                            if (!et_direccionIP.getText().toString().equals("")) {
+                                // Conexion con el dispositivo
+                                DispositivoConexion.Conectar conectar = DispositivoConexion.TratarConcexion(getContext(), IP_device, puerto_device);
 
-                                // Saber si enviamos el mensaje
-                                boolean lasClavesConcuerdan = true;
+                                // Establecemos el resto de la informacion
+                                conectar.EstablecerNombre(nombre_device);
+                                conectar.EstablecerClaves(password1_device, password2_device);
+                                conectar.ComprobarConexion(conectar_con_el_dispositivo);
 
-                                // Saber si usaremos el puerto por defecto
-                                if (!et_puerto.getText().toString().equals("")) puerto = et_puerto.getText().toString();
-
-                                // Convertimos el puerto a un entero
-                                int puerto_final = Integer.parseInt(puerto);
-
-                                // Creamos el coso de cliente
-                                Clientes cliente = new Clientes(et_direccionIP.getText().toString(), puerto_final);
-
-                                // Si posee nombre
-                                if (!et_nombrePC.getText().toString().equals(""))
-                                    cliente.AñadirLinea(InformacionConexion.CABECERA_NOMBREPC, et_nombrePC.getText().toString());
-
-                                // Si las dos claves concuerdan
-                                if (!et_passwordPC1.getText().toString().equals("") || !et_passwordPC2.getText().toString().equals(""))
+                                // Enviamos el mensaje
+                                switch (conectar.ConectarConElDispositivo())
                                 {
-                                    // Comprobamos que sean la misma clave
-                                    if (et_passwordPC1.getText().toString().equals(et_passwordPC2.getText().toString()))
-                                    {
-                                        // Añadimos la iformacion de la clave
-                                        cliente.AñadirLinea(InformacionConexion.CABECERA_CLAVEPC, et_passwordPC1.getText().toString());
-                                    }
-                                    else
-                                        lasClavesConcuerdan = false;
+                                    // En caso de que la informacion haya sido enviada con exito
+                                    case DispositivoConexion.DIRECCIONIP_VACIA:
+                                        Toast.makeText(getContext(), "Error: direccion IP vacia", Toast.LENGTH_SHORT).show();
+                                        break;
+
+                                    case DispositivoConexion.ERROR_EN_EL_PUERTO:
+                                        Toast.makeText(getContext(), "Error: el puerto ingresado es erroneo", Toast.LENGTH_SHORT).show();
+                                        break;
+
+                                    case DispositivoConexion.LAS_CLAVES_NO_COINCIDEN:
+                                        Toast.makeText(getContext(), "Error: las claves no concuerdan", Toast.LENGTH_SHORT).show();
+                                        break;
+
+                                    case DispositivoConexion.UNA_CLAVE_ESTA_VACIA:
+                                        Toast.makeText(getContext(), "Error: alguna clave esta vacia", Toast.LENGTH_SHORT).show();
+                                        break;
+
+                                    case DispositivoConexion.NO_SE_PUEDE_CONECTAR_POR_CONEXION_EXISTENTE:
+                                        Toast.makeText(getContext(), "Error: ya hay una conexion activa", Toast.LENGTH_SHORT).show();
+                                        break;
+
+                                    case DispositivoConexion.INFORMACION_SASTIFACTORIA:
+                                        if (recordar_dispositivo)
+                                        {
+                                            // Obtenemos la conexion
+                                            DispositivoConexion.Conectar conexion = DispositivoConexion.UltimaConexion;
+
+                                            // Si la conexion no es nula
+                                            if (conexion != null)
+                                            {
+                                                // Añadimos el item a la base de datos
+                                                if (DispositivoConexion.GuardarDispositivo(getContext(), conectar))
+                                                {
+                                                    // Obtenemos el ultimo dispositivo
+                                                    DispositivosIP dispositivosIP = DispositivoConexion.ObtenerUltimoDispositivo(getContext());
+
+                                                    // Comprobamos que no haya error
+                                                    if  (dispositivosIP != null)
+                                                    {
+                                                        // Obtenemos el fragment
+                                                        DeviceListFragment deviceListFragment = deviceListViewPageAdapter.ObtenerFragmenDeseado(DeviceListViewPageAdapter.TODOS_LOS_DISPOSITIVOS);
+                                                        // Dispositivo Alamacenado con exito
+                                                        deviceListFragment.AñadirDispositivo(dispositivosIP);
+                                                        // Mostramos el mensaje
+                                                        Toast.makeText(getContext(), "Dispositivo almacenado con exito", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                    else
+                                                        Toast.makeText(getContext(), "Error: no se puede recuperar los datos del dispositivo", Toast.LENGTH_SHORT).show();
+                                                }
+                                                else
+                                                    Toast.makeText(getContext(), "Error: no se ha podido almacenar los datos", Toast.LENGTH_SHORT).show();
+
+                                                alertDialog.dismiss();
+                                            }
+                                        }
+                                        else
+                                            Toast.makeText(getContext(), "Error: no se hace nada con la informacion", Toast.LENGTH_SHORT).show();
+
+                                        break;
                                 }
 
-                                if (lasClavesConcuerdan)
-                                    // En viamos el mensaje
-                                    cliente.EnviarMensajeDeTexto(InformacionConexion.MOTIVOCONEXION_CONECTARSE);
-                                else
-                                    Toast.makeText(getContext(), "Error: las claves no concuerdan", Toast.LENGTH_SHORT).show();
-                            }
-                            else
-                                Toast.makeText(getContext(), "Error: No hay direccion IP", Toast.LENGTH_SHORT).show();
                             }
                         });
 

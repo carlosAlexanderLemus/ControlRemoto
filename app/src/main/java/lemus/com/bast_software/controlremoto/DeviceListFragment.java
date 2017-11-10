@@ -11,30 +11,36 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
+import lemus.com.bast_software.controlremoto.ConexionRed.DispositivoConexion;
+
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class DeviceListFragment extends Fragment {
 
+    // Informacion
+    public ArrayList<DispositivosIP> dispositivosIPs;
+    private DispositivosIPItemAdapter dispositivosIPItemAdapter;
+
+    private int TipoDeAccion = -1;
 
     public DeviceListFragment() {
         // Required empty public constructor
+        // Creamos la lista
+        dispositivosIPs = new ArrayList<DispositivosIP>();
     }
 
+    public void establecerInformacion(int tipo_dispositivo) {
+        // Required empty public constructor
+        // Creamos la lista
+        TipoDeAccion = tipo_dispositivo;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_device_list, container, false);
-
-        // Informacion
-        ArrayList<DispositivosIP> dispositivosIPs = new ArrayList<DispositivosIP>();
-
-        for (int i = 1; i <= 10; i++)
-        {
-            dispositivosIPs.add(new DispositivosIP(getContext(), i, "192.168.0."+i, i + 11000, (i % 2) == 0));
-        }
 
         // Obtenemos el recicleview
         RecyclerView recyclerView = (RecyclerView)view.findViewById(R.id.recycle_contenedor);
@@ -43,10 +49,29 @@ public class DeviceListFragment extends Fragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
-        recyclerView.setAdapter(new DispositivosIPItemAdapter(dispositivosIPs));
+        // Obtenemos todos los dispositivos
+        switch (TipoDeAccion)
+        {
+            case DeviceListViewPageAdapter.TODOS_LOS_DISPOSITIVOS:
+                dispositivosIPs = DispositivoConexion.ObtenerTodasLasDireccionesIP(getContext());
+                break;
+            case DeviceListViewPageAdapter.LOS_DISPOSITIVOS_FAVORITOS:
+                dispositivosIPs = DispositivoConexion.ObtenerTodasLasDireccionesIPFavoritas(getContext());
+                break;
+        }
+
+        // Creamos el adaptador pero con el tipo de accion indicado
+        dispositivosIPItemAdapter = new DispositivosIPItemAdapter(getContext(), dispositivosIPs, TipoDeAccion);
+
+        recyclerView.setAdapter(dispositivosIPItemAdapter);
         recyclerView.setLayoutManager(linearLayoutManager);
 
         return view;
     }
 
+    // Añadimos los datos
+    public void AñadirDispositivo(DispositivosIP dispositivosIP)
+    {
+        dispositivosIPItemAdapter.AñadirDispositivo(dispositivosIP);
+    }
 }

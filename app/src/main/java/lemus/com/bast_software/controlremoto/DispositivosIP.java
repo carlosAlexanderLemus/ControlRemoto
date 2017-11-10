@@ -3,6 +3,8 @@ package lemus.com.bast_software.controlremoto;
 import android.content.Context;
 import android.content.res.Resources;
 
+import lemus.com.bast_software.controlremoto.ConexionRed.DispositivoConexion;
+
 /**
  * Created by mekaku on 07/11/2017.
  */
@@ -14,7 +16,8 @@ public class DispositivosIP {
     private int puerto;
     private String nombre;
     private String clave;
-    private Boolean favoritos;
+    private boolean favoritos;
+    private int frecuenca;
 
     // Constructor
     public DispositivosIP(Context context,int id, String IP, int puerto, boolean favoritos)
@@ -29,6 +32,19 @@ public class DispositivosIP {
         nombre = resources.getString(R.string.text_name_device_default);
         // Guardamos el nombre de la clave
         clave = "";
+        frecuenca = 0;
+    }
+
+    public DispositivosIP(int id, String IP, int puerto, String nombre, String clave, boolean favoritos, int frecuencia)
+    {
+        // Informacion estandar
+        this.id = id;
+        this.IP = IP;
+        this.puerto = puerto;
+        this.favoritos = favoritos;
+        this.nombre = nombre;
+        this.clave = clave;
+        this.frecuenca = frecuencia;
     }
 
     // Informacion importante
@@ -54,5 +70,17 @@ public class DispositivosIP {
 
     public Boolean getFavoritos() {
         return favoritos;
+    }
+
+    public boolean isFavoritos() {
+        return favoritos;
+    }
+
+    public int getFrecuenca() {
+        return frecuenca;
+    }
+
+    public void setFavoritos(boolean favoritos) {
+        this.favoritos = favoritos;
     }
 }
