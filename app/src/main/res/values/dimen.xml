@@ -10,5 +10,6 @@
     <dimen name="height_dialog_select_device">150dp</dimen>
     <dimen name="height_texview_title_select_item">34dp</dimen>
     <dimen name="height_botones">30dp</dimen>
+    <dimen name="height_image_device">110dp</dimen>
     <dimen name="widht_botton_footer">130dp</dimen>
 </resources>

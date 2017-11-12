@@ -8,4 +8,5 @@
     <color name="textInformation">#35838d</color>
     <color name="buttomBackgroud">#c7444a</color>
     <color name="colorAcentTab">#fffc23</color>
+    <color name="itemColorBackground">#012e33</color>
 </resources>

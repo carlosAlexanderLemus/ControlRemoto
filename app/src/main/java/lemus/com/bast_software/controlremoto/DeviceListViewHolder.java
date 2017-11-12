@@ -1,13 +1,24 @@
 package lemus.com.bast_software.controlremoto;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -124,9 +135,118 @@ public class DeviceListViewHolder extends RecyclerView.ViewHolder implements Vie
     @Override
     public boolean onLongClick(View v) {
         if (v.equals(card_view)) {
-            DispositivosIP dispositivosIP = dispositivosIPs.get(getAdapterPosition());
+            // Obtenemos el contexto
+            Context context = v.getContext();
+            // Obtenemos en menu PopUp
+            final PopupWindow popupWindow = new PopupWindow(context);
+            // Obtenemos el layout inflare
+            LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            // Creamos la vista
+            View view = inflater.inflate(R.layout.popup_device_action_layout, null);
+            // Especificamos el dispositivo actual
+            popupWindow.setFocusable(true);
+            popupWindow.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
+            popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+            popupWindow.setContentView(view);
+            // Obtenemos los botones
+            Button btn_modificar = (Button)view.findViewById(R.id.btn_device_modifire);
+            Button btn_eliminar = (Button)view.findViewById(R.id.btn_device_delete);
+            // Eliminamos el elemento
+            btn_eliminar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Obtenemos la posicion actual del item
+                    int position = getAdapterPosition();
+                    // Obtenemos el dispositivo actual
+                    DispositivosIP dispositivosIP = dispositivosIPs.get(position);
+                    // Si hemos podido eliminar con exito
+                    if (DispositivoConexion.EliminarDispositivoPorID(v.getContext(), dispositivosIP.getId()))
+                    {
+                        // Eliminamos tanto de la lista como de
+                        dispositivosIPs.remove(position);
+                        // Notificamos del error
+                        adapter.notifyItemRemoved(position);
+                    }
+                    else
+                        Toast.makeText(v.getContext(), "No se ha podido eliminar el dispositivo", Toast.LENGTH_SHORT).show();
 
-            Toast.makeText(v.getContext(), "Modificar IP: " + dispositivosIP.getId(), Toast.LENGTH_SHORT).show();
+                    // quitamos el pop up
+                    popupWindow.dismiss();
+                }
+            });
+            // En caso que queramos modificar
+            btn_modificar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Obtenemos la posicion actual del item
+                    int position = getAdapterPosition();
+                    // Obtenemos el dispositivo actual
+                    DispositivosIP dispositivosIP = dispositivosIPs.get(position);
+                    // Creamos el boul
+                    AlertDialog.Builder build = new AlertDialog.Builder(v.getContext());
+                    // Obtenemos el layout inflare
+                    LayoutInflater inflater = (LayoutInflater)v.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    // Especificamos el inflate
+                    View view = inflater.inflate(R.layout.modifier_device_item_layout, null);
+                    // Especificamos la union
+                    build.setView(view);
+                    // Creamos el alert dialog
+                    final AlertDialog alert = build.create();
+                    // EditText
+                    final EditText et_name_item_modifire = (EditText)view.findViewById(R.id.et_name_device_modifier);
+                    final EditText et_ip_item_modifire = (EditText)view.findViewById(R.id.et_ip_device_modifire);
+                    final EditText et_port_item_modifire = (EditText)view.findViewById(R.id.et_port_device_modifire);
+                    final EditText et_pass_item_modifire = (EditText)view.findViewById(R.id.et_password_device_modifire);
+                    CheckBox cb_mostrar_clave_item = (CheckBox)view.findViewById(R.id.cb_ver_clave);
+                    // Cambiar el comboboc
+                    cb_mostrar_clave_item.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                            if (isChecked)
+                                et_pass_item_modifire.setInputType(InputType.TYPE_CLASS_TEXT);
+                            else
+                                et_pass_item_modifire.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                        }
+                    });
+                    // Los datos por defecto
+                    String name = v.getContext().getResources().getString(R.string.ip_address_default);
+                    int port = Integer.parseInt(v.getContext().getResources().getString(R.string.port_default));
+                    // Comprobamos que no sean iguales
+                    if (!dispositivosIP.getNombre().equals(name))
+                        et_name_item_modifire.setText(dispositivosIP.getNombre());
+                    if (dispositivosIP.getPuerto() != port)
+                        et_port_item_modifire.setText("" + dispositivosIP.getPuerto());
+                    // Los valor que pueden ser nulo
+                    et_ip_item_modifire.setText(dispositivosIP.getIP());
+                    et_pass_item_modifire.setText(dispositivosIP.getClave());
+                    // Boton de modificar
+                    Button btn_modificar_item = (Button) view.findViewById(R.id.btn_acept_device_modifier);
+                    // Boton eliminar
+                    Button btn_cancelar_item = (Button)view.findViewById(R.id.btn_cancel_device_modifier);
+                    // Modificamos los datos
+                    btn_modificar_item.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // Modificaremos los datos
+
+                        }
+                    });
+                    // Cancelamos la modificacion
+                    btn_cancelar_item.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // Cerramos el dialogo
+                            alert.dismiss();
+                        }
+                    });
+                    // Ceramos el prop
+                    popupWindow.dismiss();
+                    // Iniciamos el alert
+                    alert.show();
+                }
+            });
+            // Mostamos el elemento
+            popupWindow.showAsDropDown(v, 0, 0);
         }
 
         return true;
