@@ -47,6 +47,16 @@ public class DispositivosIP {
         this.frecuenca = frecuencia;
     }
 
+    // Actualizar informacion
+    public void Actualizar(DispositivoConexion.Conectar conectar)
+    {
+        // Actualizamos la informacion
+        this.IP = conectar.getIP();
+        this.nombre = conectar.getNombre();
+        this.clave = conectar.getPassword_1();
+        this.puerto = Integer.parseInt(conectar.getPuerto());
+    }
+
     // Informacion importante
     public int getId() {
         return id;

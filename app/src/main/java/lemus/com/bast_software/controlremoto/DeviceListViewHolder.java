@@ -179,9 +179,9 @@ public class DeviceListViewHolder extends RecyclerView.ViewHolder implements Vie
                 @Override
                 public void onClick(View v) {
                     // Obtenemos la posicion actual del item
-                    int position = getAdapterPosition();
+                    final int position = getAdapterPosition();
                     // Obtenemos el dispositivo actual
-                    DispositivosIP dispositivosIP = dispositivosIPs.get(position);
+                    final DispositivosIP dispositivosIP = dispositivosIPs.get(position);
                     // Creamos el boul
                     AlertDialog.Builder build = new AlertDialog.Builder(v.getContext());
                     // Obtenemos el layout inflare
@@ -209,7 +209,7 @@ public class DeviceListViewHolder extends RecyclerView.ViewHolder implements Vie
                         }
                     });
                     // Los datos por defecto
-                    String name = v.getContext().getResources().getString(R.string.ip_address_default);
+                    String name = v.getContext().getResources().getString(R.string.text_name_device_default);
                     int port = Integer.parseInt(v.getContext().getResources().getString(R.string.port_default));
                     // Comprobamos que no sean iguales
                     if (!dispositivosIP.getNombre().equals(name))
@@ -227,8 +227,36 @@ public class DeviceListViewHolder extends RecyclerView.ViewHolder implements Vie
                     btn_modificar_item.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            // Modificaremos los datos
+                            // Obtenemos los datos
+                            String ip_item = et_ip_item_modifire.getText().toString();
+                            String name_item = et_name_item_modifire.getText().toString();
+                            String port_item = et_port_item_modifire.getText().toString();
+                            String pass_item = et_pass_item_modifire.getText().toString();
 
+                            // Modificaremos los datos
+                            DispositivoConexion.Conectar conectar = DispositivoConexion.EstablecerConecion(v.getContext(), ip_item, port_item, name_item, pass_item);
+
+                            // Modificamos los datos
+                            switch (conectar.ModificarDispositivoPorId(dispositivosIP.getId()))
+                            {
+                                // Vemos todos los casos de errores
+                                case DispositivoConexion.MODIFICACION_EXITOSA:
+                                    // Si se ha podido modificar
+                                    dispositivosIP.Actualizar(conectar);
+                                    adapter.notifyItemChanged(position, dispositivosIP);
+                                    Toast.makeText(v.getContext(), "Dispositivo actualizado", Toast.LENGTH_SHORT).show();
+                                    alert.dismiss();
+                                    break;
+                                case DispositivoConexion.DIRECCIONIP_VACIA:
+                                    Toast.makeText(v.getContext(), "Error: direccion IP vacia", Toast.LENGTH_SHORT).show();
+                                    break;
+                                case DispositivoConexion.ERROR_EN_EL_PUERTO:
+                                    Toast.makeText(v.getContext(), "Error: inesperado en el puerto", Toast.LENGTH_SHORT).show();
+                                    break;
+                                case DispositivoConexion.FALLO_AL_MODIFICAR:
+                                    Toast.makeText(v.getContext(), "Error: inesperado al guardar la informacion", Toast.LENGTH_SHORT).show();
+                                    break;
+                            }
                         }
                     });
                     // Cancelamos la modificacion

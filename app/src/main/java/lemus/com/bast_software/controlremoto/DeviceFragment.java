@@ -1,6 +1,7 @@
 package lemus.com.bast_software.controlremoto;
 
 
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -251,8 +252,60 @@ public class DeviceFragment extends Fragment{
                                         break;
 
                                     case InformacionConexion.MOTIVOCONEXION_REPUESTACONEXIONEXISTENTE:
-                                        // Repuesta ante una conexion ya existente
-                                        Toast.makeText(getContext(), "Ya hay algun dispositivo conectado", Toast.LENGTH_SHORT).show();
+                                        // Creamos el contructor
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+                                        //Creamos el mensaje
+                                        builder.setMessage("Ya hay una conexion existente con el dispositivo deseado, ¿Desea guartar siempre el dispositivo?")
+                                                .setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        // Obtenemos la conexion
+                                                        DispositivoConexion.Conectar conectar_item = DispositivoConexion.UltimaConexion;
+
+                                                        // Si la conexion no es nula
+                                                        if (conectar_item != null)
+                                                        {
+                                                            // Si fuimos capaces de enviar el mensaje
+                                                            if (conectar_item.isEnvioMensaje())
+                                                            {
+                                                                // Imprimimos el resultado en la parte superor
+                                                                tv_ip_address_val.setText(conectar_item.getIP());
+                                                                tv_puerto_val.setText(conectar_item.getPuerto());
+
+                                                                // Si queremos  recordar el dispositivo
+                                                                if (cbx_recordar.isChecked()){
+                                                                    // Añadimos el item a la base de datos
+                                                                    if (DispositivoConexion.GuardarDispositivo(getContext(), conectar_item))
+                                                                    {
+                                                                        // Obtenemos el ultimo dispositivo
+                                                                        DispositivosIP dispositivosIP = DispositivoConexion.ObtenerUltimoDispositivo(getContext());
+
+                                                                        // Comprobamos que no haya error
+                                                                        if  (dispositivosIP != null)
+                                                                        {
+                                                                            // Obtenemos el fragment
+                                                                            DeviceListFragment deviceListFragment = deviceListViewPageAdapter.ObtenerFragmenDeseado(DeviceListViewPageAdapter.TODOS_LOS_DISPOSITIVOS);
+                                                                            // Dispositivo Alamacenado con exito
+                                                                            deviceListFragment.AñadirDispositivo(dispositivosIP);
+                                                                            // Mostramos el mensaje
+                                                                            Toast.makeText(getContext(), "Dispositivo almacenado con exito", Toast.LENGTH_SHORT).show();
+                                                                        }
+                                                                        else
+                                                                            Toast.makeText(getContext(), "Error: no se puede recuperar los datos del dispositivo", Toast.LENGTH_SHORT).show();
+                                                                    }
+                                                                    else
+                                                                        Toast.makeText(getContext(), "Error: no se ha podido almacenar los datos", Toast.LENGTH_SHORT).show();
+
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                })
+                                                .setNegativeButton("No", null).show();
+
+                                        // Quitamos el cuadro de dialogo
+                                        alertDialog.dismiss();
 
                                         break;
                                 }
