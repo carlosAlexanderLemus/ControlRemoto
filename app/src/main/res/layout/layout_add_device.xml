@@ -141,6 +141,14 @@
             android:orientation="horizontal">
 
             <Button
+                android:id="@+id/btn_cancelar_agregar_dispositivos"
+                style="@style/MyButtonDialog"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@android:string/cancel" />
+
+            <Button
                 android:id="@+id/btn_conectar_dispositivo"
                 style="@style/MyButtonDialog"
                 android:layout_width="match_parent"
@@ -150,13 +158,6 @@
                 android:text="@string/conectar"
                 android:textColor="@android:color/white" />
 
-            <Button
-                android:id="@+id/btn_cancelar_agregar_dispositivos"
-                style="@style/MyButtonDialog"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@android:string/cancel" />
         </LinearLayout>
 
     </LinearLayout>

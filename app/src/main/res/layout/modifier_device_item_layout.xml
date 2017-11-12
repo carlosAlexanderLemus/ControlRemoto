@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/tv_device_dialog_modifire"
+            style="@style/TextViewTituloDialogFull"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/modificar_dispositivo" />
+
+        <ImageView
+            android:id="@+id/iv_device_decoration"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_image_device"
+            app:srcCompat="@mipmap/ic_device_item" />
+
+                <TextView
+                    android:id="@+id/tv_name_device_decoration"
+                    style="@style/TextViewInformationDecoration"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_name_device" />
+
+                <EditText
+                    android:id="@+id/et_name_device_modifier"
+                    style="@style/EditTextInformation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/text_name_device_default"
+                    android:inputType="textPersonName" />
+
+                <TextView
+            android:id="@+id/tv_ip_device_decoration"
+            style="@style/TextViewInformationDecoration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/text_ip_device" />
+
+        <EditText
+            android:id="@+id/et_ip_device_modifire"
+            style="@style/EditTextInformation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/ip_address_default"
+            android:inputType="textPersonName" />
+
+        <TextView
+            android:id="@+id/tv_port_device_decoration"
+            style="@style/TextViewInformationDecoration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/text_port_device" />
+
+        <EditText
+            android:id="@+id/et_port_device_modifire"
+            style="@style/EditTextInformation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/port_default"
+            android:inputType="number" />
+
+        <TextView
+            android:id="@+id/tv_password_device_decoration"
+            style="@style/TextViewInformationDecoration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/text_pass_device" />
+
+        <EditText
+            android:id="@+id/et_password_device_modifire"
+            style="@style/EditTextInformation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPassword" />
+
+                <CheckBox
+                    android:id="@+id/cb_ver_clave"
+                    style="@style/CheckBoxDialogNormal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:text="@string/see_password" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/btn_cancel_device_modifier"
+                            style="@style/ButtonFooter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@android:string/no" />
+
+                        <Button
+                            android:id="@+id/btn_acept_device_modifier"
+                            style="@style/ButtonFooter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@android:string/ok" />
+                </LinearLayout>
+        </LinearLayout>
+</ScrollView>
