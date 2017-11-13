@@ -439,7 +439,8 @@ public class DeviceFragment extends Fragment{
                                                         }
                                                     }
                                                 })
-                                                .setNegativeButton("No", null).show();
+                                                .setNegativeButton("No", null)
+                                                .show();
 
                                         // Quitamos el cuadro de dialogo
                                         alertDialog.dismiss();
