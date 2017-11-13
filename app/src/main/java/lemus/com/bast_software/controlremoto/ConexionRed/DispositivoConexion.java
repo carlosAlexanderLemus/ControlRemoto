@@ -41,7 +41,7 @@ public class DispositivoConexion {
     public static void EstablecerDispositivoActual(DispositivosIP dispositivosIP)
     {
         // Establecemos el dispositivo actual
-        dispositivo_actual = dispositivosIP;
+        dispositivo_actual = dispositivosIP.Clonar();
     }
 
     // Comprobar si hay dispositivo
@@ -49,6 +49,39 @@ public class DispositivoConexion {
     {
         // Hay dispositivo actual
         return dispositivo_actual != null;
+    }
+
+    // Obtener dispositivo
+    public static DispositivosIP ObtenerDispositivoActual()
+    {
+        return dispositivo_actual;
+    }
+
+    // Actualizar dispositivo
+    public static void ActualizarDispositivo(DispositivosIP dispositivosIP)
+    {
+        // Solo cuando ya exista alguna conexion
+        if (HayConexionEstablecida())
+        {
+            dispositivo_actual.CopiarDatosDispositivoIP(dispositivosIP);
+        }
+    }
+
+    public static void ConectarConElDispositivo(Context context, DispositivosIP dispositivosIP)
+    {
+        // Creamos el coso de cliente
+        Clientes cliente = new Clientes(dispositivosIP.getIP(), dispositivosIP.getPuerto());
+
+        // Vemos si las claves no son vacias
+        if (!dispositivosIP.getClave().trim().equals(""))
+            cliente.AñadirLinea(InformacionConexion.CABECERA_CLAVEPC, dispositivosIP.getClave().trim());
+
+        // Comprobamos que el nombre no este vacio
+        if (!dispositivosIP.getNombre().trim().equals(context.getResources().getString(R.string.text_name_device_default)))
+            cliente.AñadirLinea(InformacionConexion.CABECERA_NOMBREPC, dispositivosIP.getNombre().trim());
+
+        // En viamos el mensaje
+        cliente.EnviarMensajeDeTexto(InformacionConexion.MOTIVOCONEXION_CONECTARSE);
     }
 
     // Creamos el objeto de conectar
@@ -435,7 +468,9 @@ public class DispositivoConexion {
         // EnviarMensaje
         public int ConectarConElDispositivo()
         {
+            // Inicializamos los valores de conexion
             int mensajeError = 0;
+            UltimaConexion = null;
 
             // Primero comprobamos que posea texto la IP
             if (!IP.trim().equals(""))

@@ -175,6 +175,8 @@ public class Servidores {
                                         if (actuadorDeTexto != null)
                                             // El actuadoe
                                             actuadorDeTexto.RecibirMensaje(resultadoTexto);
+                                        else
+                                            Log.d("PutoActuador","No hay actuador");
 
                                         break;
                                 }

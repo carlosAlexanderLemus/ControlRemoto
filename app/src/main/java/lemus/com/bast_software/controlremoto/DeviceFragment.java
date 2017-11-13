@@ -50,71 +50,145 @@ public class DeviceFragment extends Fragment{
     // Adaptador
     private DeviceListViewPageAdapter deviceListViewPageAdapter;
 
+    // Informacion de los elementos
     private TextView tv_ip_address_val;
     private TextView tv_puerto_val;
     private CheckBox cb_recordar_dispositivo;
     private ImageView iv_favority_state;
 
+    // Guardamos el dispositivo IP
+    public DispositivosIP dispositivosIPNuevaConexion = null;
+
     public DeviceFragment() {
         // Required empty public constructor
     }
 
-    // Establecemos la informacion
-    private void EstablecerInformacionPorConexion(DispositivosIP dispositivosIP)
+    // Cambiamos el dispositivo actual
+    public void EstablecerNuevaConexion(DispositivosIP dispositivosIP)
     {
-        // Obtenemos una copia del dispositivo
-        final DispositivosIP dispositivosIP_clone = dispositivosIP.Clonar();
+        // Modificamos accion
+        // Establecemos el evento
+        servidor.establecerActuadorDeTexto(new ActuadorDeTexto() {
+            @Override
+            public void RecibirMensaje(ResultadoTexto resultado) {
+                // Probamos los distintos casos
+                switch (resultado.TipoDeAccion())
+                {
+                    // Conexion exitosa
+                    case InformacionConexion.MOTIVOCONEXION_REPUESTAEXITOSA:
+                        // Comprobamos que haya un dispositivo Actual
+                        if (dispositivosIPNuevaConexion != null)
+                        {
+                            // Guardamos la informacion del dispositivo actual
+                            DispositivoConexion.EstablecerDispositivoActual(dispositivosIPNuevaConexion);
+                            // Especificamos la informacion
+                            EstablecerInformacionPorConexion();
+                            // Reseteamos la IP
+                            dispositivosIPNuevaConexion = null;
+                            // Mensaje final
+                            Toast.makeText(getContext(), "Dispositivo conectado con exito", Toast.LENGTH_SHORT).show();
+                        }
+                        break;
 
-        // Estabelcemos la informacion
-        if (tv_ip_address_val != null)
-            tv_ip_address_val.setText(dispositivosIP.getIP());
+                    case  InformacionConexion.MOTIVOCONEXION_REPUESTAFRACASO:
+                        // Obtenemos la repuesta
+                        Toast.makeText(getContext(), "Fracaso de conexion", Toast.LENGTH_SHORT).show();
+                        break;
 
-        if (tv_puerto_val != null)
-            tv_puerto_val.setText(""+dispositivosIP.getPuerto());
-
-        // Habilitamos el poder recordar el dispositivo
-        if (cb_recordar_dispositivo != null) {
-            cb_recordar_dispositivo.setEnabled(true);
-
-            cb_recordar_dispositivo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
+                    case InformacionConexion.MOTIVOCONEXION_REPUESTACONEXIONEXISTENTE:
+                        Toast.makeText(getContext(), "El dispositivo ya se encuentra conectado", Toast.LENGTH_SHORT).show();
+                        break;
                 }
-            });
+            }
+        });
+        // Guardamos el dispositivo
+        dispositivosIPNuevaConexion = dispositivosIP;
+        // Establecemos una nueva conexion
+        DispositivoConexion.ConectarConElDispositivo(getContext(), dispositivosIP.Clonar());
+    }
+    // Cambiar el valor de favoritsmos
+    public void CambiarFavoritismosEnDispositivo(boolean estado)
+    {
+        // Solo se ejecutara en caso que ya haya conexion establecida
+        if (DispositivoConexion.HayConexionEstablecida() && iv_favority_state != null)
+        {
+            // Cambiamos la estrella
+            if (!estado)
+                iv_favority_state.setImageResource(android.R.drawable.btn_star_big_off);
+            else
+                iv_favority_state.setImageResource(android.R.drawable.btn_star_big_on);
         }
+    }
 
-        // Cambiamos el icono de la imagen
-        if (iv_favority_state != null) {
-            iv_favority_state.setImageResource(android.R.drawable.btn_star_big_off);
+    // Establecemos la informacion
+    private void EstablecerInformacionPorConexion()
+    {
+        // Si hay alguna conexion
+        if (DispositivoConexion.HayConexionEstablecida())
+        {
+            // Obtenemos el dispositivo
+            DispositivosIP dispositivoIp = DispositivoConexion.ObtenerDispositivoActual();
 
-            // Cambiamos el favoritismo
-            iv_favority_state.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // Cambismoe el icono
-                    if (dispositivosIP_clone.isFavoritos())
-                        iv_favority_state.setImageResource(android.R.drawable.btn_star_big_off);
-                    else
-                        iv_favority_state.setImageResource(android.R.drawable.btn_star_big_on);
+            // Estabelcemos la informacion
+            if (tv_ip_address_val != null)
+                tv_ip_address_val.setText(dispositivoIp.getIP());
 
-                    // Cambiamos la informacion
-                    dispositivosIP_clone.setFavoritos(!dispositivosIP_clone.isFavoritos());
+            if (tv_puerto_val != null)
+                tv_puerto_val.setText(""+dispositivoIp.getPuerto());
 
-                    // Modificamos el dispositivo
-                    if (DispositivoConexion.ModificarDispositivoFavorito(getContext(), dispositivosIP_clone.isFavoritos(), dispositivosIP_clone.getId()))
-                    {
-                        // Modificamos a los item
-                        deviceListViewPageAdapter.ModificarItemsDispositivos(dispositivosIP_clone.Clonar());
+            // Habilitamos el poder recordar el dispositivo
+            if (cb_recordar_dispositivo != null) {
+                cb_recordar_dispositivo.setEnabled(true);
 
-                        // Mensaje sastifactorio
-                        Toast.makeText(v.getContext(), "Dispositivo modificado con exito", Toast.LENGTH_SHORT).show();
+                cb_recordar_dispositivo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
                     }
-                }
-            });
-        }
+                });
+            }
 
-        // Cambiamos el recordadorio
+            // Cambiamos el icono de la imagen
+            if (iv_favority_state != null) {
+                // Cambiamos la imagen
+                if  (dispositivoIp.isFavoritos())
+                    iv_favority_state.setImageResource(android.R.drawable.btn_star_big_on);
+                else
+                    iv_favority_state.setImageResource(android.R.drawable.btn_star_big_off);
+
+                // Cambiamos el favoritismo
+                iv_favority_state.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Si hay alguna conexion
+                        if (DispositivoConexion.HayConexionEstablecida())
+                        {
+                            // Obtenemos el dispositivo
+                            DispositivosIP dispositivosIP = DispositivoConexion.ObtenerDispositivoActual();
+
+                            // Cambismoe el icono
+                            if (dispositivosIP.isFavoritos())
+                                iv_favority_state.setImageResource(android.R.drawable.btn_star_big_off);
+                            else
+                                iv_favority_state.setImageResource(android.R.drawable.btn_star_big_on);
+
+                            // Cambiamos la informacion
+                            dispositivosIP.setFavoritos(!dispositivosIP.isFavoritos());
+
+                            // Modificamos el dispositivo
+                            if (DispositivoConexion.ModificarDispositivoFavorito(getContext(), dispositivosIP.isFavoritos(), dispositivosIP.getId()))
+                            {
+                                // Modificamos a los item
+                                deviceListViewPageAdapter.ModificarItemsDispositivos(dispositivosIP.Clonar());
+
+                                // Mensaje sastifactorio
+                                Toast.makeText(v.getContext(), "Dispositivo modificado con exito", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                });
+            }
+        }
 
     }
 
@@ -134,7 +208,7 @@ public class DeviceFragment extends Fragment{
         iv_favority_state = (ImageView)view.findViewById(R.id.iv_favority_state);
 
         // Iniciamos el dispositivo
-        deviceListViewPageAdapter = new DeviceListViewPageAdapter(getFragmentManager());
+        deviceListViewPageAdapter = new DeviceListViewPageAdapter(this);
         viewPager.setAdapter(deviceListViewPageAdapter);
 
         // Opciones a escoger
@@ -259,6 +333,7 @@ public class DeviceFragment extends Fragment{
                         servidor.establecerActuadorDeTexto(new ActuadorDeTexto() {
                             @Override
                             public void RecibirMensaje(ResultadoTexto resultado) {
+                                Toast.makeText(getContext(), "Puta recibio el mensaje", Toast.LENGTH_SHORT).show();
                                 // Probamos los distintos casos
                                 switch (resultado.TipoDeAccion())
                                 {
@@ -293,7 +368,7 @@ public class DeviceFragment extends Fragment{
                                                             // Guardamos la informacion del dispositivo actual
                                                             DispositivoConexion.EstablecerDispositivoActual(dispositivosIP);
                                                             // Especificamos la informacion
-                                                            EstablecerInformacionPorConexion(dispositivosIP);
+                                                            EstablecerInformacionPorConexion();
                                                             // Mostramos el mensaje
                                                             Toast.makeText(getContext(), "Dispositivo almacenado con exito", Toast.LENGTH_SHORT).show();
                                                         }
@@ -350,8 +425,6 @@ public class DeviceFragment extends Fragment{
                                                                             DeviceListFragment deviceListFragment = deviceListViewPageAdapter.ObtenerFragmenDeseado(DeviceListViewPageAdapter.TODOS_LOS_DISPOSITIVOS);
                                                                             // Dispositivo Alamacenado con exito
                                                                             deviceListFragment.AñadirDispositivo(dispositivosIP);
-                                                                            // Especificamos la informacion
-                                                                            EstablecerInformacionPorConexion(dispositivosIP);
                                                                             // Mostramos el mensaje
                                                                             Toast.makeText(getContext(), "Dispositivo almacenado con exito", Toast.LENGTH_SHORT).show();
                                                                         }
@@ -370,7 +443,6 @@ public class DeviceFragment extends Fragment{
 
                                         // Quitamos el cuadro de dialogo
                                         alertDialog.dismiss();
-
                                         break;
                                 }
                             }
@@ -473,13 +545,8 @@ public class DeviceFragment extends Fragment{
                                                     }
                                                 }
                                             })
-                                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    // Quitamos el dialogo
-                                                    alertDialog.dismiss();
-                                                }
-                                            }).show();
+                                            .setNegativeButton("No", null)
+                                            .show();
                                 }
                                 else
                                 {

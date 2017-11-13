@@ -22,8 +22,9 @@ public class DeviceListViewPageAdapter extends FragmentStatePagerAdapter {
     public static final int LOS_DISPOSITIVOS_RECIENTES = 1;
     public static final int LOS_DISPOSITIVOS_FAVORITOS = 2;
 
-    public DeviceListViewPageAdapter(FragmentManager fm) {
-        super(fm);
+    public DeviceListViewPageAdapter(DeviceFragment deviceFragment) {
+        // Usamos el fragment manager
+        super(deviceFragment.getFragmentManager());
 
         // Establecemos el dispositivo
         this.deviceFragment = deviceFragment;
@@ -34,14 +35,21 @@ public class DeviceListViewPageAdapter extends FragmentStatePagerAdapter {
         DeviceListFragment todos_los_item = new DeviceListFragment();
         todos_los_item.establecerInformacion(TODOS_LOS_DISPOSITIVOS);
 
+        DeviceListFragment los_mas_usados = new DeviceListFragment();
+
         DeviceListFragment todos_los_item_favoritos = new DeviceListFragment();
         todos_los_item_favoritos.establecerInformacion(LOS_DISPOSITIVOS_FAVORITOS);
+
+        // Establecemos el device padre
+        todos_los_item.EstablecerFragmentPadre(deviceFragment);
+        los_mas_usados.EstablecerFragmentPadre(deviceFragment);
+        todos_los_item_favoritos.EstablecerFragmentPadre(deviceFragment);
 
         // Obtenemos la lista de los datos
         // Todos los item
         deviceListFragments.add(todos_los_item);
         // Los recientes
-        deviceListFragments.add(new DeviceListFragment());
+        deviceListFragments.add(los_mas_usados);
         // Los favoritos
         deviceListFragments.add(todos_los_item_favoritos);
     }

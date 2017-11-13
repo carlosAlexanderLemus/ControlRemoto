@@ -8,6 +8,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,6 +38,7 @@ public class DeviceListViewHolder extends RecyclerView.ViewHolder implements Vie
     private View card_view;
     private ImageView iv_favorite;
     private DispositivosIPItemAdapter adapter;
+    private DeviceListFragment deviceListFragment;
 
     public DeviceListViewHolder(View itemView, List<DispositivosIP> dispositivosIPs, DispositivosIPItemAdapter adapter) {
         super(itemView);
@@ -48,6 +50,11 @@ public class DeviceListViewHolder extends RecyclerView.ViewHolder implements Vie
 
         this.dispositivosIPs = dispositivosIPs;
         this.adapter = adapter;
+    }
+
+    // Establecemos el device
+    public void setDeviceListFragment(DeviceListFragment deviceListFragment) {
+        this.deviceListFragment = deviceListFragment;
     }
 
     // Establecer la informacion
@@ -78,30 +85,91 @@ public class DeviceListViewHolder extends RecyclerView.ViewHolder implements Vie
     @Override
     public void onClick(View v) {
         // Obtenemos el dispositivo actual
-        DispositivosIP dispositivosIP = dispositivosIPs.get(getAdapterPosition());
+        final DispositivosIP dispositivosIP = dispositivosIPs.get(getAdapterPosition());
 
         // Si la vista es igual a la card
         if (v.equals(card_view)){
-            // En caso que queramos seleccionar el dispositivo
-            Context context = v.getContext();
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            boolean poder_establecer_conexion = true;
 
-            // Obtenemos el layout inlfater
-            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View layout = inflater.inflate(R.layout.select_device_item_layout, null);
+            // Revisamos que haya alguna conexion previa
+            if (DispositivoConexion.HayConexionEstablecida())
+            {
+                // Revisamos que la conexion no sea con esta IP
+                if (DispositivoConexion.ObtenerDispositivoActual().getId() == dispositivosIP.getId())
+                {
+                    // Al ser lo mismo ya no puede establecer la conexion
+                    poder_establecer_conexion = false;
+                    // Mostramos el mensaje de conexion
+                }
+            }
 
-            // Obtenemos los texto
-            TextView tv_name = (TextView)layout.findViewById(R.id.tv_selected_name_device);
-            TextView tv_ip = (TextView)layout.findViewById(R.id.tv_selected_ip_device);
+            if (poder_establecer_conexion)
+            {
+                // En caso que queramos seleccionar el dispositivo
+                Context context = v.getContext();
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
-            tv_name.setText(dispositivosIP.getNombre());
-            tv_ip.setText(dispositivosIP.getIP());
+                // Obtenemos el layout inlfater
+                LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View layout = inflater.inflate(R.layout.select_device_item_layout, null);
 
-            builder.setView(layout);
+                // Obtenemos los texto
+                TextView tv_name = (TextView)layout.findViewById(R.id.tv_selected_name_device);
+                TextView tv_ip = (TextView)layout.findViewById(R.id.tv_selected_ip_device);
 
-            final AlertDialog dialog = builder.create();
+                // Obtenemos los botones
+                Button btn_conectar = (Button)layout.findViewById(R.id.btn_aceptar_conexion);
+                Button btn_cancelar = (Button)layout.findViewById(R.id.btn_cancelar_conexion);
 
-            dialog.show();
+                tv_name.setText(dispositivosIP.getNombre());
+                tv_ip.setText(dispositivosIP.getIP());
+
+                builder.setView(layout);
+
+                final AlertDialog dialog = builder.create();
+
+                // Manejamos los botones
+                btn_cancelar.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Cerramos la conexion
+                        dialog.dismiss();
+                    }
+                });
+
+                btn_conectar.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Comprobamos que haya una conexion previa
+                        if (DispositivoConexion.HayConexionEstablecida())
+                        {
+                            // Al haber una conexion mostramos un mensaje
+                            AlertDialog.Builder comprobar_conexion = new AlertDialog.Builder(v.getContext());
+                            comprobar_conexion.setTitle("Ya existe una conexion previa")
+                                    .setMessage("¿Desea establecer una conexion?")
+                                    .setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            // Quitamos la conexion previa y establecemos una nueva conexion
+                                            deviceListFragment.ObtenerFragmentPadre().EstablecerNuevaConexion(dispositivosIP);
+                                        }
+                                    })
+                                    .setNegativeButton("No", null)
+                                    .show();
+                        }
+                        else
+                        {
+                            // Quitamos la conexion previa y establecemos una nueva conexion
+                            deviceListFragment.ObtenerFragmentPadre().EstablecerNuevaConexion(dispositivosIP);
+                        }
+
+                        // Cerramos el dialofo
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.show();
+            }
         }
         else if (v.equals(iv_favorite))
         {
@@ -112,6 +180,19 @@ public class DeviceListViewHolder extends RecyclerView.ViewHolder implements Vie
                 iv_favorite.setImageResource(android.R.drawable.btn_star_big_on);
 
             dispositivosIP.setFavoritos(!dispositivosIP.isFavoritos());
+
+            // en caso que sea el principal
+            if (DispositivoConexion.HayConexionEstablecida())
+            {
+                // En caso que sea el mismo id
+                if (DispositivoConexion.ObtenerDispositivoActual().getId() == dispositivosIP.getId())
+                {
+                    // Actualizamos la informacion del dispositivo
+                    DispositivoConexion.ActualizarDispositivo(dispositivosIP);
+                    // Cambiamos la informacion del padre
+                    deviceListFragment.ObtenerFragmentPadre().CambiarFavoritismosEnDispositivo(dispositivosIP.isFavoritos());
+                }
+            }
 
             if (DispositivoConexion.ModificarDispositivoFavorito(v.getContext(), dispositivosIP.isFavoritos(), dispositivosIP.getId()))
             {

@@ -22,8 +22,21 @@ public class DeviceListFragment extends Fragment {
     // Informacion
     public ArrayList<DispositivosIP> dispositivosIPs;
     private DispositivosIPItemAdapter dispositivosIPItemAdapter;
+    private DeviceFragment deviceFragment;
 
     private int TipoDeAccion = -1;
+
+    public void EstablecerFragmentPadre(DeviceFragment deviceFragment)
+    {
+        // Guardamos el dispositivo padre
+        this.deviceFragment = deviceFragment;
+    }
+
+    public DeviceFragment ObtenerFragmentPadre()
+    {
+        // Guardamos el dispositivo padre
+        return deviceFragment;
+    }
 
     public DeviceListFragment() {
         // Required empty public constructor
@@ -67,7 +80,7 @@ public class DeviceListFragment extends Fragment {
         }
 
         // Creamos el adaptador pero con el tipo de accion indicado
-        dispositivosIPItemAdapter = new DispositivosIPItemAdapter(getContext(), dispositivosIPs, TipoDeAccion);
+        dispositivosIPItemAdapter = new DispositivosIPItemAdapter(this, dispositivosIPs, TipoDeAccion);
 
         recyclerView.setAdapter(dispositivosIPItemAdapter);
         recyclerView.setLayoutManager(linearLayoutManager);

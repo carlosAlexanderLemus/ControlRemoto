@@ -74,6 +74,6 @@
             android:id="@+id/btn_aceptar_conexion"
             style="@style/ButtonFooter"
             android:layout_height="match_parent"
-            android:text="@android:string/ok" />
+            android:text="@string/conectar" />
     </LinearLayout>
 </LinearLayout>

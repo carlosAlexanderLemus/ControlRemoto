@@ -62,7 +62,7 @@ public class Clientes {
             // MOTIVO DE LA CONEXION
             salida.println(motivo_conexion);
 
-            // Informacion
+            // Informacion extra por el cual enviamos el mensaje
             salida.println(Servidores.obtenerIpAddress());
             salida.println(Servidores.obtenerPuerto());
 

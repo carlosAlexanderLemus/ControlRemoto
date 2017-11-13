@@ -19,11 +19,13 @@ public class DispositivosIPItemAdapter extends RecyclerView.Adapter<DeviceListVi
     private List<DispositivosIP> dispositivosIPs;
     private Context context;
     private int TipoDeAccion;
+    private DeviceListFragment deviceListFragment;
 
-    public DispositivosIPItemAdapter(Context context, List<DispositivosIP> dispositivosIPs, int TipoDeAccion) {
+    public DispositivosIPItemAdapter(DeviceListFragment deviceListFragment, List<DispositivosIP> dispositivosIPs, int TipoDeAccion) {
         this.dispositivosIPs = dispositivosIPs;
-        this.context = context;
+        this.context = deviceListFragment.getContext();
         this.TipoDeAccion = TipoDeAccion;
+        this.deviceListFragment = deviceListFragment;
     }
 
     @Override
@@ -35,7 +37,9 @@ public class DispositivosIPItemAdapter extends RecyclerView.Adapter<DeviceListVi
 
     @Override
     public void onBindViewHolder(DeviceListViewHolder holder, int position) {
+        // Establecemos lo mas importante
         holder.EstablecerInformacion(position);
+        holder.setDeviceListFragment(deviceListFragment);
 
     }
 
