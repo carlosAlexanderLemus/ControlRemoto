@@ -259,6 +259,8 @@ public class DispositivoConexion {
         {
             // Error
             Log.d("ModificarError", ex.getMessage());
+            // Ha ocurrido algun error
+            resultado = false;
         }
 
         return resultado;
@@ -290,6 +292,8 @@ public class DispositivoConexion {
         {
             // Error
             Log.d("ModificarError", ex.getMessage());
+            // Ha ocurrido algun error
+            resultado = false;
         }
 
         return resultado;
@@ -321,6 +325,8 @@ public class DispositivoConexion {
         {
             // Error
             Log.d("EliminarError", ex.getMessage());
+            // Ha ocurrido algun error
+            resultado = false;
         }
 
         return resultado;

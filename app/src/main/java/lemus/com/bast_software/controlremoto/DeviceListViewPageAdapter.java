@@ -3,6 +3,7 @@ package lemus.com.bast_software.controlremoto;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,5 +66,23 @@ public class DeviceListViewPageAdapter extends FragmentStatePagerAdapter {
         }
         else
             return null;
+    }
+
+    // Modificar dispositivos por ID
+    public void ModificarItemsDispositivos(DispositivosIP dispositivosIP)
+    {
+        // Obtenemos todos los fragments para luego buscar es sus hijos
+        for (DeviceListFragment device : deviceListFragments) {
+            // Manejo de los errores
+            try
+            {
+                // A cada fragment le modificamos el item
+                device.ModificarItemPorDispositivos(dispositivosIP.Clonar());
+            }
+            catch (Exception ex)
+            {
+                Log.d("ErroCambiarValor", ex.getMessage());
+            }
+        }
     }
 }

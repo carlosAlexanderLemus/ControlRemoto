@@ -39,6 +39,98 @@ public class DispositivosIPItemAdapter extends RecyclerView.Adapter<DeviceListVi
 
     }
 
+    // Modificar ite
+    public void ModificarItemConDispositivoIP(DispositivosIP dispositivosIP)
+    {
+        switch (TipoDeAccion)
+        {
+            // En caso que tratemos con los favoritos
+            case DeviceListViewPageAdapter.LOS_DISPOSITIVOS_FAVORITOS:
+                // Si poseemos datos
+                if (dispositivosIPs.size() > 0)
+                {
+                    // Sabremos que si alguno concordo
+                    boolean encontro_dispositivo_parecido = false;
+                    boolean eliminar_dispositivo = false;
+                    int indice_item = -1;
+
+                    // Repasaremos la lista de los dispositvos
+                    for (int i = 0; i < dispositivosIPs.size(); i++)
+                    {
+                        // Obtenemos el dispositivo
+                        DispositivosIP device = dispositivosIPs.get(i);
+
+                        // Comprobamos que las ip concuerden si es haci modificamos la ip
+                        if (device.getId() == dispositivosIP.getId())
+                        {
+                            // Al encontrar el dispositivo
+                            encontro_dispositivo_parecido = true;
+                            // Ahora vemos si esta en favorito
+                            if (dispositivosIP.isFavoritos())
+                            {
+                                // Cambiamos el favoritismo
+                                device.CopiarDatosDispositivoIP(dispositivosIP);
+                                // Notificamos el cambio
+                                notifyItemChanged(i);
+                            }
+                            else {
+                                // En caso de que sea negativo lo quitamos
+                                eliminar_dispositivo = true;
+                                indice_item = i;
+                            }
+
+                            // Rompemos el ciclo for
+                            break;
+                        }
+                    }
+
+                    // En caso de que no exista el dispositivo
+                    if (!encontro_dispositivo_parecido)
+                    {
+                        // Añadimos aquel dispositivo IP
+                        AñadirDispositivo(dispositivosIP.Clonar());
+                    }
+                    else if (eliminar_dispositivo)
+                    {
+                        // Como encontro datos y los tenemos que eliminar
+                        dispositivosIPs.remove(indice_item);
+                        notifyItemRemoved(indice_item);
+                    }
+                }
+                else
+                {
+                    // Lo almacenamos en caso que sea un favorito
+                    if (dispositivosIP.isFavoritos())
+                    {
+                        // Al no poseer datos tenemos que agregarlo
+                        AñadirDispositivo(dispositivosIP.Clonar());
+                    }
+                }
+                break;
+
+            //
+            case DeviceListViewPageAdapter.TODOS_LOS_DISPOSITIVOS:
+                for (int i = 0; i < dispositivosIPs.size(); i++)
+                {
+                    // Obtenemos el dispositivo
+                    DispositivosIP device = dispositivosIPs.get(i);
+
+                    // Comprobamos que posean el mismo id
+                    if (device.getId() == dispositivosIP.getId())
+                    {
+                        // Copiamos los datos
+                        device.CopiarDatosDispositivoIP(dispositivosIP);
+                        // Re cargamos
+                        notifyItemChanged(i);
+                        // Salimos del bucle
+                        break;
+                    }
+                }
+                break;
+        }
+
+    }
+
     public void AñadirDispositivo(DispositivosIP dispositivosIP)
     {
         // Añadimos un nuevo dispositivo

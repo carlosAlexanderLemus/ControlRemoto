@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,7 +19,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Checkable;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,9 +52,70 @@ public class DeviceFragment extends Fragment{
 
     private TextView tv_ip_address_val;
     private TextView tv_puerto_val;
+    private CheckBox cb_recordar_dispositivo;
+    private ImageView iv_favority_state;
 
     public DeviceFragment() {
         // Required empty public constructor
+    }
+
+    // Establecemos la informacion
+    private void EstablecerInformacionPorConexion(DispositivosIP dispositivosIP)
+    {
+        // Obtenemos una copia del dispositivo
+        final DispositivosIP dispositivosIP_clone = dispositivosIP.Clonar();
+
+        // Estabelcemos la informacion
+        if (tv_ip_address_val != null)
+            tv_ip_address_val.setText(dispositivosIP.getIP());
+
+        if (tv_puerto_val != null)
+            tv_puerto_val.setText(""+dispositivosIP.getPuerto());
+
+        // Habilitamos el poder recordar el dispositivo
+        if (cb_recordar_dispositivo != null) {
+            cb_recordar_dispositivo.setEnabled(true);
+
+            cb_recordar_dispositivo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                }
+            });
+        }
+
+        // Cambiamos el icono de la imagen
+        if (iv_favority_state != null) {
+            iv_favority_state.setImageResource(android.R.drawable.btn_star_big_off);
+
+            // Cambiamos el favoritismo
+            iv_favority_state.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Cambismoe el icono
+                    if (dispositivosIP_clone.isFavoritos())
+                        iv_favority_state.setImageResource(android.R.drawable.btn_star_big_off);
+                    else
+                        iv_favority_state.setImageResource(android.R.drawable.btn_star_big_on);
+
+                    // Cambiamos la informacion
+                    dispositivosIP_clone.setFavoritos(!dispositivosIP_clone.isFavoritos());
+
+                    // Modificamos el dispositivo
+                    if (DispositivoConexion.ModificarDispositivoFavorito(getContext(), dispositivosIP_clone.isFavoritos(), dispositivosIP_clone.getId()))
+                    {
+                        // Modificamos a los item
+                        deviceListViewPageAdapter.ModificarItemsDispositivos(dispositivosIP_clone.Clonar());
+
+                        // Mensaje sastifactorio
+                        Toast.makeText(v.getContext(), "Dispositivo modificado con exito", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+
+        // Cambiamos el recordadorio
+
     }
 
     @Override
@@ -66,6 +130,8 @@ public class DeviceFragment extends Fragment{
 
         tv_ip_address_val = (TextView)view.findViewById(R.id.tv_ip_adress_val);
         tv_puerto_val = (TextView)view.findViewById(R.id.tv_port_val);
+        cb_recordar_dispositivo = (CheckBox)view.findViewById(R.id.cb_recordar_dispositivo);
+        iv_favority_state = (ImageView)view.findViewById(R.id.iv_favority_state);
 
         // Iniciamos el dispositivo
         deviceListViewPageAdapter = new DeviceListViewPageAdapter(getFragmentManager());
@@ -209,10 +275,6 @@ public class DeviceFragment extends Fragment{
                                             // Si fuimos capaces de enviar el mensaje
                                             if (conectar.isEnvioMensaje())
                                             {
-                                                // Imprimimos el resultado en la parte superor
-                                                tv_ip_address_val.setText(conectar.getIP());
-                                                tv_puerto_val.setText(conectar.getPuerto());
-
                                                 // Si queremos  recordar el dispositivo
                                                 if (cbx_recordar.isChecked()){
                                                     // Añadimos el item a la base de datos
@@ -230,6 +292,8 @@ public class DeviceFragment extends Fragment{
                                                             deviceListFragment.AñadirDispositivo(dispositivosIP);
                                                             // Guardamos la informacion del dispositivo actual
                                                             DispositivoConexion.EstablecerDispositivoActual(dispositivosIP);
+                                                            // Especificamos la informacion
+                                                            EstablecerInformacionPorConexion(dispositivosIP);
                                                             // Mostramos el mensaje
                                                             Toast.makeText(getContext(), "Dispositivo almacenado con exito", Toast.LENGTH_SHORT).show();
                                                         }
@@ -271,10 +335,6 @@ public class DeviceFragment extends Fragment{
                                                             // Si fuimos capaces de enviar el mensaje
                                                             if (conectar_item.isEnvioMensaje())
                                                             {
-                                                                // Imprimimos el resultado en la parte superor
-                                                                tv_ip_address_val.setText(conectar_item.getIP());
-                                                                tv_puerto_val.setText(conectar_item.getPuerto());
-
                                                                 // Si queremos  recordar el dispositivo
                                                                 if (cbx_recordar.isChecked()){
                                                                     // Añadimos el item a la base de datos
@@ -290,6 +350,8 @@ public class DeviceFragment extends Fragment{
                                                                             DeviceListFragment deviceListFragment = deviceListViewPageAdapter.ObtenerFragmenDeseado(DeviceListViewPageAdapter.TODOS_LOS_DISPOSITIVOS);
                                                                             // Dispositivo Alamacenado con exito
                                                                             deviceListFragment.AñadirDispositivo(dispositivosIP);
+                                                                            // Especificamos la informacion
+                                                                            EstablecerInformacionPorConexion(dispositivosIP);
                                                                             // Mostramos el mensaje
                                                                             Toast.makeText(getContext(), "Dispositivo almacenado con exito", Toast.LENGTH_SHORT).show();
                                                                         }

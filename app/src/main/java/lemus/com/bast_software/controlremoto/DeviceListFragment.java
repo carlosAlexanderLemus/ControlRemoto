@@ -37,6 +37,12 @@ public class DeviceListFragment extends Fragment {
         TipoDeAccion = tipo_dispositivo;
     }
 
+    public void ModificarItemPorDispositivos(DispositivosIP dispositivosIP)
+    {
+        // Modificamos el adaptador
+        dispositivosIPItemAdapter.ModificarItemConDispositivoIP(dispositivosIP);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         // Inflate the layout for this fragment

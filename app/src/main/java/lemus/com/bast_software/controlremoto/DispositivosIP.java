@@ -35,7 +35,25 @@ public class DispositivosIP {
         frecuenca = 0;
     }
 
-    public DispositivosIP(int id, String IP, int puerto, String nombre, String clave, boolean favoritos, int frecuencia)
+    public DispositivosIP Clonar()
+    {
+        // Devolvemos el nuevo dispositivo
+        return new DispositivosIP(id, IP, puerto, nombre, clave, favoritos, frecuenca);
+    }
+
+    public void CopiarDatosDispositivoIP(DispositivosIP dispositivosIP)
+    {
+        // Informacion obtenida del dispositivo
+        id = dispositivosIP.id;
+        IP = dispositivosIP.IP;
+        puerto = dispositivosIP.puerto;
+        favoritos = dispositivosIP.favoritos;
+        nombre = dispositivosIP.nombre;
+        clave = dispositivosIP.clave;
+        frecuenca = dispositivosIP.frecuenca;
+    }
+
+    public DispositivosIP(int id, String IP, int puerto, String nombre, String clave, boolean favoritos, int frecuenca)
     {
         // Informacion estandar
         this.id = id;
@@ -44,7 +62,7 @@ public class DispositivosIP {
         this.favoritos = favoritos;
         this.nombre = nombre;
         this.clave = clave;
-        this.frecuenca = frecuencia;
+        this.frecuenca = frecuenca;
     }
 
     // Actualizar informacion

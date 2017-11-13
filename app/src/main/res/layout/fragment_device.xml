@@ -106,6 +106,7 @@
                     style="@style/CheckBoxAloneCenter"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:enabled="false"
                     android:text="@string/option_remenber_device" />
             </LinearLayout>
         </LinearLayout>
