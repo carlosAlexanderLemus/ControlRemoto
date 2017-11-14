@@ -601,7 +601,7 @@ public class DeviceFragment extends Fragment{
                             @Override
                             public void onClick(View v) {
                                 // Comprobamos que no hay conexion
-                                if (DispositivoConexion.HayConexionEstablecida())
+                                if (DispositivoConexion.HayConexionEstablecida() && cbx_conectar.isChecked())
                                 {
                                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
