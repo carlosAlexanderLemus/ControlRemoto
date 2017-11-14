@@ -63,6 +63,19 @@ public class DeviceFragment extends Fragment{
         // Required empty public constructor
     }
 
+    public void ActualizarTodosLosDispositivos(int tipo_accion, DispositivosIP dispositivosIP)
+    {
+        deviceListViewPageAdapter.ActualizarTodosLosDispositivos(tipo_accion, dispositivosIP);
+        Log.d("TipoDeAccion", "Tipo: "+tipo_accion);
+    }
+
+    public void EliminarDispositivo(int tipo_accion, DispositivosIP dispositivosIP)
+    {
+        deviceListViewPageAdapter.EliminarDispositivo(tipo_accion, dispositivosIP);
+        Log.d("TipoDeAccion", "Tipo: "+tipo_accion);
+    }
+
+
     // Cambiamos el dispositivo actual
     public void EstablecerNuevaConexion(DispositivosIP dispositivosIP)
     {
@@ -79,6 +92,15 @@ public class DeviceFragment extends Fragment{
                         // Comprobamos que haya un dispositivo Actual
                         if (dispositivosIPNuevaConexion != null)
                         {
+                            // Aumentamos la frecuencia por uno
+                            dispositivosIPNuevaConexion.setFrecuenca(dispositivosIPNuevaConexion.getFrecuenca()+1);
+                            // Cambiamos la frecuencia
+                            if (!DispositivoConexion.ActualizarFrecuenciaDelDispositivo(getContext(), dispositivosIPNuevaConexion))
+                                // Si cambiamos la frecuencia si no logramos modificarlo
+                                dispositivosIPNuevaConexion.setFrecuenca(dispositivosIPNuevaConexion.getFrecuenca()-1);
+                            else
+                                // Notificamos a todos
+                                deviceListViewPageAdapter.ActualizarDispositivosUsados();
                             // Guardamos la informacion del dispositivo actual
                             DispositivoConexion.EstablecerDispositivoActual(dispositivosIPNuevaConexion);
                             // Especificamos la informacion

@@ -36,6 +36,7 @@ public class DeviceListViewPageAdapter extends FragmentStatePagerAdapter {
         todos_los_item.establecerInformacion(TODOS_LOS_DISPOSITIVOS);
 
         DeviceListFragment los_mas_usados = new DeviceListFragment();
+        los_mas_usados.establecerInformacion(LOS_DISPOSITIVOS_RECIENTES);
 
         DeviceListFragment todos_los_item_favoritos = new DeviceListFragment();
         todos_los_item_favoritos.establecerInformacion(LOS_DISPOSITIVOS_FAVORITOS);
@@ -93,4 +94,58 @@ public class DeviceListViewPageAdapter extends FragmentStatePagerAdapter {
             }
         }
     }
+
+    // Modificamos todos los item excepto el propio
+    public void ActualizarTodosLosDispositivos(int tipo_de_accion, DispositivosIP dispositivosIP)
+    {
+        // Obtenemos todos los fragments para luego buscar es sus hijos
+        for (DeviceListFragment device : deviceListFragments) {
+            // Manejo de los errores
+            try
+            {
+                // Si no es el tipo de accion
+                device.ActualizarTodosLosDispositivos(tipo_de_accion, dispositivosIP);
+            }
+            catch (Exception ex)
+            {
+                Log.d("ErroCambiarValor", ex.getMessage());
+            }
+        }
+    }
+
+    public void EliminarDispositivo(int tipo_de_accion, DispositivosIP dispositivosIP)
+    {
+        // Obtenemos todos los fragments para luego buscar es sus hijos
+        for (DeviceListFragment device : deviceListFragments) {
+            // Manejo de los errores
+            try
+            {
+                // Si no es el tipo de accion
+                device.EliminarDispositivo(tipo_de_accion, dispositivosIP);
+            }
+            catch (Exception ex)
+            {
+                Log.d("ErroCambiarValor", ex.getMessage());
+            }
+        }
+    }
+
+    public void ActualizarDispositivosUsados()
+    {
+        // Obtenemos todos los fragments para luego buscar es sus hijos
+        for (DeviceListFragment device : deviceListFragments) {
+            // Manejo de los errores
+            try
+            {
+                // A cada fragment le modificamos el item
+                device.ActualizarDispositivosUsados();
+            }
+            catch (Exception ex)
+            {
+                Log.d("ErroCambiarValor", ex.getMessage());
+            }
+        }
+    }
+
+
 }

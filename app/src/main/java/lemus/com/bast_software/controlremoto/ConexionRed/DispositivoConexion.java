@@ -166,6 +166,39 @@ public class DispositivoConexion {
         return dispositivosIP;
     }
 
+    public static int ObtenerFrecuenciaDelDispositivo(Context context, DispositivosIP dispositivosIP)
+    {
+        // Obtenemos los dispositivos IP
+        int frecuencia = -1;
+
+        try
+        {
+            // Obtenemos la base de datos
+            String base = context.getResources().getString(R.string.base_de_datos);
+
+            // Obtenemos los datos
+            SQLDispositivos sqlDispositivos = new SQLDispositivos(context, base, null, 1);
+
+            // Obtenemos la base de datos para escribir en ella
+            SQLiteDatabase db = sqlDispositivos.getReadableDatabase();
+
+            // Obtenemos los datos
+            Cursor cursor = db.rawQuery(SQLDispositivos.ObtenerFrecuencia(dispositivosIP.getId()), null);
+
+            // Si hay datos
+            if (cursor.moveToFirst())
+                // Obtenemos la informacion del primer resultado
+                frecuencia = cursor.getInt(0);
+        }
+        catch (Exception ex)
+        {
+            Log.d("ErrorObtener", ex.getMessage());
+        }
+
+        // Devolvemos los dispositivos IP
+        return frecuencia;
+    }
+
     // Obtenemos todas las direcciones IP
     public static ArrayList<DispositivosIP> ObtenerTodasLasDireccionesIP(Context context)
     {
@@ -185,6 +218,53 @@ public class DispositivoConexion {
 
             // Obtenemos los datos
             Cursor cursor = db.rawQuery(SQLDispositivos.SQL_SELECT_ALL_DEVICES, null);
+
+            // Si hay datos
+            if (cursor.moveToFirst())
+            {
+                do {
+                    // Obtenemos la informacion
+                    int _id = cursor.getInt(0);
+                    String _ip = cursor.getString(1);
+                    String _puerto = cursor.getString(2);
+                    String _nombre = cursor.getString(3);
+                    String _clave = cursor.getString(4);
+                    int _favoritos = cursor.getInt(5);
+                    int _frecuencia = cursor.getInt(6);
+
+                    // Obtenemos todos los datos
+                    dispositivosIPs.add(new DispositivosIP(_id, _ip, Integer.parseInt(_puerto), _nombre, _clave, (_favoritos != 0), _frecuencia));
+                }
+                while (cursor.moveToNext());// Nos movemos al siguientes
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.d("ErrorObtener", ex.getMessage());
+        }
+
+        // Devolvemos los dispositivos IP
+        return dispositivosIPs;
+    }
+
+    public static ArrayList<DispositivosIP> ObtenerTodasLasDireccionesIPMasUsadas(Context context)
+    {
+        // Obtenemos los dispositivos IP
+        ArrayList<DispositivosIP> dispositivosIPs = new ArrayList<DispositivosIP>();
+
+        try
+        {
+            // Obtenemos la base de datos
+            String base = context.getResources().getString(R.string.base_de_datos);
+
+            // Obtenemos los datos
+            SQLDispositivos sqlDispositivos = new SQLDispositivos(context, base, null, 1);
+
+            // Obtenemos la base de datos para escribir en ella
+            SQLiteDatabase db = sqlDispositivos.getReadableDatabase();
+
+            // Obtenemos los datos
+            Cursor cursor = db.rawQuery(SQLDispositivos.SQL_SELECT_ALL_MOST_USED, null);
 
             // Si hay datos
             if (cursor.moveToFirst())
@@ -284,6 +364,38 @@ public class DispositivoConexion {
 
             // Ejecutamos la consulta
             db.execSQL(SQLDispositivos.ModificarDispositivoFavorito(star, id));
+
+            // Cerramos la conexion
+            db.close();
+        }
+        catch (Exception ex)
+        {
+            // Error
+            Log.d("ModificarError", ex.getMessage());
+            // Ha ocurrido algun error
+            resultado = false;
+        }
+
+        return resultado;
+    }
+
+    public static boolean ActualizarFrecuenciaDelDispositivo(Context context, DispositivosIP dispositivosIP)
+    {
+        boolean resultado = true;
+
+        try
+        {
+            // Obtenemos la base de datos
+            String base = context.getResources().getString(R.string.base_de_datos);
+
+            // Obtenemos los datos
+            SQLDispositivos sqlDispositivos = new SQLDispositivos(context, base, null, 1);
+
+            // Obtenemos la base de datos para escribir en ella
+            SQLiteDatabase db = sqlDispositivos.getWritableDatabase();
+
+            // Ejecutamos la consulta
+            db.execSQL(SQLDispositivos.ModificarFrecuencia(dispositivosIP.getFrecuenca(), dispositivosIP.getId()));
 
             // Cerramos la conexion
             db.close();
@@ -657,6 +769,7 @@ public class DispositivoConexion {
         public static final String SQL_SELECT_ALL_DEVICES = "SELECT id, ip, puerto, nombre, clave, favoritos, frecuencia FROM dispositivos";
         public static final String SQL_SELECT_ULTIMA_IP = "SELECT id, ip, puerto, nombre, clave, favoritos, frecuencia FROM dispositivos ORDER BY id DESC LIMIT 1";
         public static final String SQL_SELECT_ALL_DEVICES_FAVORITES = "SELECT id, ip, puerto, nombre, clave, favoritos, frecuencia FROM dispositivos WHERE favoritos = 1";
+        public static final String SQL_SELECT_ALL_MOST_USED = "SELECT id, ip, puerto, nombre, clave, favoritos, frecuencia FROM dispositivos WHERE frecuencia > 0 ORDER BY frecuencia DESC";
 
         public SQLDispositivos(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
             super(context, name, factory, version);
@@ -668,6 +781,11 @@ public class DispositivoConexion {
             db.execSQL(SQLTablaDispositivos);
         }
 
+        public static String ObtenerFrecuencia(int id)
+        {
+            return "SELECT frecuencia FROM dispositivos WHERE id="+id;
+        }
+
         public static String InsertarNuevoDispositivo(String IP, String Puerto, String Nombre, String Clave)
         {
             return "INSERT INTO dispositivos (ip, puerto, nombre, clave, favoritos, frecuencia) VALUES ('" + IP + "', '" + Puerto +"','" + Nombre + "','" + Clave +"', 0, 0)";
@@ -676,6 +794,11 @@ public class DispositivoConexion {
         public static String ModificarDispositivoFavorito(int favorito, int id)
         {
             return "UPDATE dispositivos SET favoritos = " + favorito + " WHERE id = " + id;
+        }
+
+        public static String ModificarFrecuencia(int frecuencia, int id)
+        {
+            return "UPDATE dispositivos SET frecuencia = " + frecuencia + " WHERE id = " + id;
         }
 
         public static String EliminarDispositivoPorId(int id)

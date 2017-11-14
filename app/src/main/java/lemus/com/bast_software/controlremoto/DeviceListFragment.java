@@ -74,6 +74,9 @@ public class DeviceListFragment extends Fragment {
             case DeviceListViewPageAdapter.TODOS_LOS_DISPOSITIVOS:
                 dispositivosIPs = DispositivoConexion.ObtenerTodasLasDireccionesIP(getContext());
                 break;
+            case DeviceListViewPageAdapter.LOS_DISPOSITIVOS_RECIENTES:
+                dispositivosIPs = DispositivoConexion.ObtenerTodasLasDireccionesIPMasUsadas(getContext());
+                break;
             case DeviceListViewPageAdapter.LOS_DISPOSITIVOS_FAVORITOS:
                 dispositivosIPs = DispositivoConexion.ObtenerTodasLasDireccionesIPFavoritas(getContext());
                 break;
@@ -92,5 +95,28 @@ public class DeviceListFragment extends Fragment {
     public void AñadirDispositivo(DispositivosIP dispositivosIP)
     {
         dispositivosIPItemAdapter.AñadirDispositivo(dispositivosIP);
+    }
+
+    public void ActualizarDispositivosUsados()
+    {
+        dispositivosIPItemAdapter.ModificarDispositivosMasUsado();
+    }
+
+    public void ActualizarTodosLosDispositivos(int tipo_de_accion, DispositivosIP dispositivosIP)
+    {
+        // Si no es el mismo tipo de accion
+        if (tipo_de_accion != TipoDeAccion)
+        {
+            dispositivosIPItemAdapter.ModificarItemConDispositivoIP(dispositivosIP);
+        }
+    }
+
+    public void EliminarDispositivo(int tipo_de_accion, DispositivosIP dispositivosIP)
+    {
+        // Si no es el mismo tipo de accion
+        if (tipo_de_accion != TipoDeAccion)
+        {
+            dispositivosIPItemAdapter.EliminarItemConDispositivoIP(dispositivosIP);
+        }
     }
 }

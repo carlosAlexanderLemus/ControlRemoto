@@ -111,4 +111,8 @@ public class DispositivosIP {
     public void setFavoritos(boolean favoritos) {
         this.favoritos = favoritos;
     }
+
+    public void setFrecuenca(int frecuenca) {
+        this.frecuenca = frecuenca;
+    }
 }

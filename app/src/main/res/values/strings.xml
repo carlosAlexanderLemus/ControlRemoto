@@ -30,15 +30,19 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="conectar">Conectar</string>
+    <string name="desconectar">Desconectar</string>
 
     <string name="base_de_datos">DBControlRemoto</string>
 
     <string name="titulo_seleccionar_dispositivo">¿Desea seleccionar el dispositvo?</string>
+    <string name="titulo_deseleccionar_dispositivo">¿Desea desconectar el dispositvo?</string>
     <string name="modificar_dispositivo">Modificar dispositivo:</string>
 
     <string name="see_password">Ver clave</string>
 
     <string name="delete_device">Eliminar</string>
     <string name="modifire_device">Modificar</string>
+
+    <string name="delete_disconect">Eliminar y desconectar</string>
 
 </resources>
