@@ -1,15 +1,10 @@
 package lemus.com.bast_software.controlremoto;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -18,7 +13,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -200,6 +194,8 @@ public class DeviceListViewHolder extends RecyclerView.ViewHolder implements Vie
                 btn_desconectar.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        // Nos desconectamos
+                        deviceListFragment.ObtenerFragmentPadre().Desconectar(dispositivosIP);
                        // Quitamos el dialogo
                        dialog.dismiss();
                     }
@@ -457,6 +453,8 @@ public class DeviceListViewHolder extends RecyclerView.ViewHolder implements Vie
                 btn_eliminar_desconectar.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        // Nos desconectamos
+                        deviceListFragment.ObtenerFragmentPadre().DesconectarConEliminacion(dispositivosIP);
                         // Quitamos el coso
                         popupWindow.dismiss();
                     }

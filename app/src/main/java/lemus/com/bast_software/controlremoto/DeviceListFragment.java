@@ -119,4 +119,9 @@ public class DeviceListFragment extends Fragment {
             dispositivosIPItemAdapter.EliminarItemConDispositivoIP(dispositivosIP);
         }
     }
+
+    public void EliminarDispositivo(DispositivosIP dispositivosIP)
+    {
+        dispositivosIPItemAdapter.EliminarItemConDispositivoIP(dispositivosIP);
+    }
 }

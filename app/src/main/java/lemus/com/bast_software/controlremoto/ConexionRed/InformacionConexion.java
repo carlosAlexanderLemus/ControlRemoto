@@ -13,6 +13,8 @@ public class InformacionConexion {
     public static final String MOTIVOCONEXION_REPUESTAEXITOSA = "hay conexion con el dispositivo";
     public static final String MOTIVOCONEXION_REPUESTAFRACASO = "no puedo haber conexion con el dispositivo";
     public static final String MOTIVOCONEXION_REPUESTACONEXIONEXISTENTE = "ya hay dispositivos conectados";
+    public static final String MOTIVOCONEXION_DESCONECTARSE = "quiero desconectarme ahora";
+    public static final String MOTIVOCONEXION_DESCONEXION_EXISTOSA = "desconexion exitosa";
 
     // Tipo de texto
     public static final String CABECERA_NOMBREPC = "[NombrePC]";

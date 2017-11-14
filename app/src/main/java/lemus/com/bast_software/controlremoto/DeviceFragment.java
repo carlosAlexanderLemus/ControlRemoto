@@ -55,12 +55,70 @@ public class DeviceFragment extends Fragment{
     private TextView tv_puerto_val;
     private CheckBox cb_recordar_dispositivo;
     private ImageView iv_favority_state;
+    private ImageView iv_disconect_device_selected;
 
     // Guardamos el dispositivo IP
     public DispositivosIP dispositivosIPNuevaConexion = null;
 
     public DeviceFragment() {
         // Required empty public constructor
+    }
+
+
+    public void Desconectar(DispositivosIP dispositivosIP)
+    {
+        // Establecemos el evento
+        servidor.establecerActuadorDeTexto(new ActuadorDeTexto() {
+            @Override
+            public void RecibirMensaje(ResultadoTexto resultado) {
+                // Probamos los distintos casos
+                switch (resultado.TipoDeAccion())
+                {
+                    // En caso que la desconexion haya sido exitosa
+                    case InformacionConexion.MOTIVOCONEXION_DESCONEXION_EXISTOSA:
+                        // Nos desconectamos
+                        DispositivoConexion.EliminarDispositivoActual();
+                        // Borramos la informacion
+                        ResetearInformacion();
+                        Toast.makeText(getContext(), "Sea desconectado con exito", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        });
+
+        DispositivoConexion.SolicitarDesconexion(getContext(), dispositivosIP);
+    }
+
+    public void DesconectarConEliminacion(DispositivosIP dispositivosIP)
+    {
+        // btenemos el dispositivo
+        final DispositivosIP dispositivosIP_eliminar = dispositivosIP.Clonar();
+        // Establecemos el evento
+        servidor.establecerActuadorDeTexto(new ActuadorDeTexto() {
+            @Override
+            public void RecibirMensaje(ResultadoTexto resultado) {
+                // Probamos los distintos casos
+                switch (resultado.TipoDeAccion())
+                {
+                    // En caso que la desconexion haya sido exitosa
+                    case InformacionConexion.MOTIVOCONEXION_DESCONEXION_EXISTOSA:
+                        // Eliminamos el item de la base
+                        if (DispositivoConexion.EliminarDispositivoPorID(getContext(), dispositivosIP_eliminar.getId()))
+                        {
+                            // Si logramos la eliminacion borramos todos los item
+                            EliminarDispositivo(dispositivosIP_eliminar);
+                        }
+                        // Nos desconectamos
+                        DispositivoConexion.EliminarDispositivoActual();
+                        // Borramos la informacion
+                        ResetearInformacion();
+                        Toast.makeText(getContext(), "Sea desconectado con exito", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        });
+
+        DispositivoConexion.SolicitarDesconexion(getContext(), dispositivosIP);
     }
 
     public void ActualizarTodosLosDispositivos(int tipo_accion, DispositivosIP dispositivosIP)
@@ -73,6 +131,11 @@ public class DeviceFragment extends Fragment{
     {
         deviceListViewPageAdapter.EliminarDispositivo(tipo_accion, dispositivosIP);
         Log.d("TipoDeAccion", "Tipo: "+tipo_accion);
+    }
+
+    public void EliminarDispositivo(DispositivosIP dispositivosIP)
+    {
+        deviceListViewPageAdapter.EliminarDispositivo(dispositivosIP);
     }
 
 
@@ -140,6 +203,41 @@ public class DeviceFragment extends Fragment{
             else
                 iv_favority_state.setImageResource(android.R.drawable.btn_star_big_on);
         }
+    }
+
+    private void ResetearInformacion()
+    {
+        // Estabelcemos la informacion
+        if (tv_ip_address_val != null) {
+            tv_ip_address_val.setText(getContext().getResources().getString(R.string.ip_address_default));
+        }
+
+        if (tv_puerto_val != null) {
+            tv_puerto_val.setText(getContext().getResources().getString(R.string.port_default));
+        }
+
+        // Habilitamos el poder recordar el dispositivo
+        if (cb_recordar_dispositivo != null) {
+            cb_recordar_dispositivo.setEnabled(false);
+            cb_recordar_dispositivo.setOnCheckedChangeListener(null);
+            cb_recordar_dispositivo.setChecked(false);
+        }
+
+        // Cambiamos el icono de la imagen
+        if (iv_favority_state != null) {
+            // Cambiamos la imagen
+            iv_favority_state.setImageResource(android.R.drawable.btn_star_big_off);
+            // Cambiamos el favoritismo
+            iv_favority_state.setOnClickListener(null);
+        }
+
+        // Desconectar dispositivo
+        if (iv_disconect_device_selected != null)
+        {
+            // Desconectar
+            iv_disconect_device_selected.setOnClickListener(null);
+        }
+
     }
 
     // Establecemos la informacion
@@ -210,6 +308,33 @@ public class DeviceFragment extends Fragment{
                     }
                 });
             }
+
+            // Desconectar dispositivo
+            if (iv_disconect_device_selected != null)
+            {
+                // Desconectar
+                iv_disconect_device_selected.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Primero creamos un cuadro de texto
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+                        // Damos la informacion basica
+                        builder.setMessage("¿Esta seguro que desea desconectarse?")
+                                .setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // Obtenemos la direccion IP
+                                        DispositivosIP dispositivosIP = DispositivoConexion.ObtenerDispositivoActual().Clonar();
+                                        // Ahora lo eliminamos
+                                        Desconectar(dispositivosIP);
+                                    }
+                                })
+                                .setNegativeButton("No", null)
+                                .show();
+                    }
+                });
+            }
         }
 
     }
@@ -228,7 +353,7 @@ public class DeviceFragment extends Fragment{
         tv_puerto_val = (TextView)view.findViewById(R.id.tv_port_val);
         cb_recordar_dispositivo = (CheckBox)view.findViewById(R.id.cb_recordar_dispositivo);
         iv_favority_state = (ImageView)view.findViewById(R.id.iv_favority_state);
-
+        iv_disconect_device_selected = (ImageView)view.findViewById(R.id.iv_disconect_device_selected);
         // Iniciamos el dispositivo
         deviceListViewPageAdapter = new DeviceListViewPageAdapter(this);
         viewPager.setAdapter(deviceListViewPageAdapter);

@@ -130,6 +130,23 @@ public class DeviceListViewPageAdapter extends FragmentStatePagerAdapter {
         }
     }
 
+    public void EliminarDispositivo(DispositivosIP dispositivosIP)
+    {
+        // Obtenemos todos los fragments para luego buscar es sus hijos
+        for (DeviceListFragment device : deviceListFragments) {
+            // Manejo de los errores
+            try
+            {
+                // Si no es el tipo de accion
+                device.EliminarDispositivo(dispositivosIP);
+            }
+            catch (Exception ex)
+            {
+                Log.d("ErroCambiarValor", ex.getMessage());
+            }
+        }
+    }
+
     public void ActualizarDispositivosUsados()
     {
         // Obtenemos todos los fragments para luego buscar es sus hijos

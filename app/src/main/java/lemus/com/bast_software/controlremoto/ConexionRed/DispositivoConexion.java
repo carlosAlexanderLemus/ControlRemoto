@@ -44,6 +44,12 @@ public class DispositivoConexion {
         dispositivo_actual = dispositivosIP.Clonar();
     }
 
+    // Quitamos la conexion actual
+    public static void EliminarDispositivoActual()
+    {
+        dispositivo_actual = null;
+    }
+
     // Comprobar si hay dispositivo
     public static boolean HayConexionEstablecida()
     {
@@ -82,6 +88,15 @@ public class DispositivoConexion {
 
         // En viamos el mensaje
         cliente.EnviarMensajeDeTexto(InformacionConexion.MOTIVOCONEXION_CONECTARSE);
+    }
+
+    public static void SolicitarDesconexion(Context context, DispositivosIP dispositivosIP)
+    {
+        // Creamos el coso de cliente
+        Clientes cliente = new Clientes(dispositivosIP.getIP(), dispositivosIP.getPuerto());
+
+        // En viamos el mensaje
+        cliente.EnviarMensajeDeTexto(InformacionConexion.MOTIVOCONEXION_DESCONECTARSE);
     }
 
     // Creamos el objeto de conectar
