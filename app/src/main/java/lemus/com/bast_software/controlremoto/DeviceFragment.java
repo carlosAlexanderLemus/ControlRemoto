@@ -260,10 +260,23 @@ public class DeviceFragment extends Fragment{
             if (cb_recordar_dispositivo != null) {
                 cb_recordar_dispositivo.setEnabled(true);
 
+                // Ahora verificamos que sea el dispositvo a recordar
+                cb_recordar_dispositivo.setChecked(DispositivoConexion.ComprobarExistenciaDeRecordadorioDelDispositivo(getContext(), dispositivoIp));
+
                 cb_recordar_dispositivo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
+                        // En caso que queramos recordar el dispositivo
+                        if (isChecked){
+                            // Recordamos el dispositivo actual
+                            if (DispositivoConexion.RecordarElDispositivoActual(getContext()))
+                                Toast.makeText(getContext(), "El dispositivo sera recordado", Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            // Eliminamos el dispositivo
+                            if (DispositivoConexion.EliminarRecordarDispositivo(getContext()))
+                                Toast.makeText(getContext(), "No se recordara el dispositivo", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
             }

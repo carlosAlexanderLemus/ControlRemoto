@@ -22,6 +22,8 @@ public class DispositivoConexion {
     // Informacion de la conexion actual en estatico
     private static DispositivosIP dispositivo_actual = null;
 
+    private static final int version = 2;
+
     private static boolean dispositivo_conectado = false;
 
     public static Conectar UltimaConexion;
@@ -36,6 +38,161 @@ public class DispositivoConexion {
     public static final int INFORMACION_SASTIFACTORIA = 6;
     public static final int MODIFICACION_EXITOSA = 7;
     public static final int FALLO_AL_MODIFICAR = 8;
+
+    // Guardamos el dispositivo
+    public static boolean RecordarElDispositivoActual(Context context)
+    {
+        // Saber si ha sido un exito
+        boolean resultado = true;
+
+        // Si hay datos
+        if(HayConexionEstablecida())
+        {
+            // Obtenemos el indice
+            int id = dispositivo_actual.getId();
+
+            // En caso que no haya algun dispositivo almacenado
+            if (!HayDispositivoGuardado(context))
+                RecordarElDispositivo(context, id);
+            else
+                // En caso que haya algun dispositivo guardado
+                // Eliminamos el dispositivo
+                if (EliminarRecordarDispositivo(context))
+                    RecordarElDispositivo(context, id);
+                else
+                    resultado = false;
+
+        }
+        else
+            resultado = false;
+
+        // obtenemos el resultado
+        return resultado;
+    }
+
+    public static boolean RecordarElDispositivo(Context context, int id)
+    {
+        boolean resultado = true;
+
+        try {
+            // Obtenemos la base de datos
+            String base = context.getResources().getString(R.string.base_de_datos);
+
+            // Obtenemos los datos
+            SQLRecordarDispositivo sqlRecirdarDispositivo = new SQLRecordarDispositivo(context, base, null, version);
+
+            // Obtenemos la base de datos para escribir en ella
+            SQLiteDatabase db = sqlRecirdarDispositivo.getWritableDatabase();
+
+            // Ejecutamos la consulta
+            db.execSQL(SQLRecordarDispositivo.GuardarDispositivo(id));
+
+            // Cerramos la conexion
+            db.close();
+        }
+        catch (Exception ex)
+        {
+            Log.d("ErroDB", ex.getMessage());
+            // Ha ocurrido algun error
+            resultado = false;
+        }
+
+        return resultado;
+    }
+
+    public static boolean EliminarRecordarDispositivo(Context context)
+    {
+        boolean resultado = true;
+
+        try
+        {
+            // Obtenemos la base de datos
+            String base = context.getResources().getString(R.string.base_de_datos);
+
+            // Obtenemos los datos
+            SQLRecordarDispositivo sqlRecordarDispositivo = new SQLRecordarDispositivo(context, base, null, version);
+
+            // Obtenemos la base de datos para escribir en ella
+            SQLiteDatabase db = sqlRecordarDispositivo.getWritableDatabase();
+
+            // Ejecutamos la consulta
+            db.execSQL(SQLRecordarDispositivo.SQL_ELIMINAR_TODOS_LOS_DISPOSITIVOS);
+
+            // Cerramos la conexion
+            db.close();
+        }
+        catch (Exception ex)
+        {
+            // Error
+            Log.d("EliminarErrorXD", ex.getMessage());
+            // Ha ocurrido algun error
+            resultado = false;
+        }
+
+        return resultado;
+    }
+
+    public static boolean HayDispositivoGuardado(Context context)
+    {
+        // Repuesta
+        boolean resultado = false;
+
+        try
+        {
+            // Obtenemos la base de datos
+            String base = context.getResources().getString(R.string.base_de_datos);
+
+            // Obtenemos los datos
+            SQLRecordarDispositivo sqlRecordarDispositivo = new SQLRecordarDispositivo(context, base, null, version);
+
+            // Obtenemos la base de datos para escribir en ella
+            SQLiteDatabase db = sqlRecordarDispositivo.getReadableDatabase();
+
+            // Obtenemos los datos
+            Cursor cursor = db.rawQuery(SQLRecordarDispositivo.SQL_OBTENER_TODOS_LOS_DISPOSITIVO, null);
+
+            // Si posee datos
+            resultado = cursor.moveToFirst();
+        }
+        catch (Exception ex)
+        {
+            Log.d("ErrorObtener", ex.getMessage());
+        }
+
+        // Damos la repuesta
+        return resultado;
+    }
+
+    public static boolean ComprobarExistenciaDeRecordadorioDelDispositivo(Context context, DispositivosIP dispositivosIP)
+    {
+        // Repuesta
+        boolean resultado = false;
+
+        try
+        {
+            // Obtenemos la base de datos
+            String base = context.getResources().getString(R.string.base_de_datos);
+
+            // Obtenemos los datos
+            SQLRecordarDispositivo sqlRecordarDispositivo = new SQLRecordarDispositivo(context, base, null, version);
+
+            // Obtenemos la base de datos para escribir en ella
+            SQLiteDatabase db = sqlRecordarDispositivo.getReadableDatabase();
+
+            // Obtenemos los datos
+            Cursor cursor = db.rawQuery(SQLRecordarDispositivo.ObtenerDispositivoPorId(dispositivosIP.getId()), null);
+
+            // Si posee datos sera true
+            resultado = cursor.moveToFirst();
+        }
+        catch (Exception ex)
+        {
+            Log.d("ErrorObtener", ex.getMessage());
+        }
+
+        // Damos la repuesta
+        return resultado;
+    }
 
     // Establecemos la conexion actual
     public static void EstablecerDispositivoActual(DispositivosIP dispositivosIP)
@@ -149,7 +306,7 @@ public class DispositivoConexion {
             String base = context.getResources().getString(R.string.base_de_datos);
 
             // Obtenemos los datos
-            SQLDispositivos sqlDispositivos = new SQLDispositivos(context, base, null, 1);
+            SQLDispositivos sqlDispositivos = new SQLDispositivos(context, base, null, version);
 
             // Obtenemos la base de datos para escribir en ella
             SQLiteDatabase db = sqlDispositivos.getReadableDatabase();
@@ -192,7 +349,7 @@ public class DispositivoConexion {
             String base = context.getResources().getString(R.string.base_de_datos);
 
             // Obtenemos los datos
-            SQLDispositivos sqlDispositivos = new SQLDispositivos(context, base, null, 1);
+            SQLDispositivos sqlDispositivos = new SQLDispositivos(context, base, null, version);
 
             // Obtenemos la base de datos para escribir en ella
             SQLiteDatabase db = sqlDispositivos.getReadableDatabase();
@@ -226,7 +383,7 @@ public class DispositivoConexion {
             String base = context.getResources().getString(R.string.base_de_datos);
 
             // Obtenemos los datos
-            SQLDispositivos sqlDispositivos = new SQLDispositivos(context, base, null, 1);
+            SQLDispositivos sqlDispositivos = new SQLDispositivos(context, base, null, version);
 
             // Obtenemos la base de datos para escribir en ella
             SQLiteDatabase db = sqlDispositivos.getReadableDatabase();
@@ -273,7 +430,7 @@ public class DispositivoConexion {
             String base = context.getResources().getString(R.string.base_de_datos);
 
             // Obtenemos los datos
-            SQLDispositivos sqlDispositivos = new SQLDispositivos(context, base, null, 1);
+            SQLDispositivos sqlDispositivos = new SQLDispositivos(context, base, null, version);
 
             // Obtenemos la base de datos para escribir en ella
             SQLiteDatabase db = sqlDispositivos.getReadableDatabase();
@@ -320,7 +477,7 @@ public class DispositivoConexion {
             String base = context.getResources().getString(R.string.base_de_datos);
 
             // Obtenemos los datos
-            SQLDispositivos sqlDispositivos = new SQLDispositivos(context, base, null, 1);
+            SQLDispositivos sqlDispositivos = new SQLDispositivos(context, base, null, version);
 
             // Obtenemos la base de datos para escribir en ella
             SQLiteDatabase db = sqlDispositivos.getReadableDatabase();
@@ -367,7 +524,7 @@ public class DispositivoConexion {
             String base = context.getResources().getString(R.string.base_de_datos);
 
             // Obtenemos los datos
-            SQLDispositivos sqlDispositivos = new SQLDispositivos(context, base, null, 1);
+            SQLDispositivos sqlDispositivos = new SQLDispositivos(context, base, null, version);
 
             // Obtenemos la base de datos para escribir en ella
             SQLiteDatabase db = sqlDispositivos.getWritableDatabase();
@@ -404,7 +561,7 @@ public class DispositivoConexion {
             String base = context.getResources().getString(R.string.base_de_datos);
 
             // Obtenemos los datos
-            SQLDispositivos sqlDispositivos = new SQLDispositivos(context, base, null, 1);
+            SQLDispositivos sqlDispositivos = new SQLDispositivos(context, base, null, version);
 
             // Obtenemos la base de datos para escribir en ella
             SQLiteDatabase db = sqlDispositivos.getWritableDatabase();
@@ -436,7 +593,7 @@ public class DispositivoConexion {
             String base = conectar.getContext().getResources().getString(R.string.base_de_datos);
 
             // Obtenemos los datos
-            SQLDispositivos sqlDispositivos = new SQLDispositivos(conectar.getContext(), base, null, 1);
+            SQLDispositivos sqlDispositivos = new SQLDispositivos(conectar.getContext(), base, null, version);
 
             // Obtenemos la base de datos para escribir en ella
             SQLiteDatabase db = sqlDispositivos.getWritableDatabase();
@@ -470,7 +627,7 @@ public class DispositivoConexion {
             String base = context.getResources().getString(R.string.base_de_datos);
 
             // Obtenemos los datos
-            SQLDispositivos sqlDispositivos = new SQLDispositivos(context, base, null, 1);
+            SQLDispositivos sqlDispositivos = new SQLDispositivos(context, base, null, version);
 
             // Obtenemos la base de datos para escribir en ella
             SQLiteDatabase db = sqlDispositivos.getWritableDatabase();
@@ -502,7 +659,7 @@ public class DispositivoConexion {
             String base = context.getResources().getString(R.string.base_de_datos);
 
             // Obtenemos los datos
-            SQLDispositivos sqlDispositivos = new SQLDispositivos(context, base, null, 1);
+            SQLDispositivos sqlDispositivos = new SQLDispositivos(context, base, null, version);
 
             // Obtenemos la base de datos para escribir en ella
             SQLiteDatabase db = sqlDispositivos.getWritableDatabase();
@@ -776,11 +933,47 @@ public class DispositivoConexion {
         }
     }
 
+    public static class SQLRecordarDispositivo extends SQLiteOpenHelper
+    {
+
+        private static final String SQLTablaRecordarDispositivo = "CREATE TABLE recordar_dispositivo (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, id_dispositivo INT NOT NULL)";
+        private static final String SQLEliminarTablaRecordarDispositivo = "DROP TABLE IF EXISTS recordar_dispositivo";
+
+        public static final String SQL_OBTENER_TODOS_LOS_DISPOSITIVO = "SELECT id, id_dispositivo FROM recordar_dispositivo";
+        public static final String SQL_ELIMINAR_TODOS_LOS_DISPOSITIVOS = "DELETE FROM recordar_dispositivo";
+
+        public static String GuardarDispositivo(int id)
+        {
+            return "INSERT INTO recordar_dispositivo (id_dispositivo) VALUES (" + id + ")";
+        }
+
+        public static String ObtenerDispositivoPorId(int id)
+        {
+            return "SELECT id, id_dispositivo FROM recordar_dispositivo WHERE id_dispositivo=" + id;
+        }
+
+        public SQLRecordarDispositivo(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
+            super(context, name, factory, version);
+        }
+
+        @Override
+        public void onCreate(SQLiteDatabase db) {
+            // Creamos la tabla
+            db.execSQL(SQLTablaRecordarDispositivo);
+        }
+
+        @Override
+        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+            // Eliminamos y volvemos a crear la tabla
+            db.execSQL(SQLEliminarTablaRecordarDispositivo);
+            db.execSQL(SQLTablaRecordarDispositivo);
+        }
+    }
+
     private static class SQLDispositivos extends SQLiteOpenHelper
     {
         private static final String SQLTablaDispositivos = "CREATE TABLE dispositivos (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, ip VARCHAR(15) NOT NULL, puerto VARCHAR(10) NOT NULL, nombre VARCHAR(255), clave VARCHAR(255), favoritos BOOLEAN NOT NULL, frecuencia INT)";
         private static final String SQLEliminarTablaDispositivos = "DROP TABLE IF EXISTS dispositivos";
-        public static final String SQL_NAME_TABLE = "dispositivos";
         public static final String SQL_SELECT_ALL_DEVICES = "SELECT id, ip, puerto, nombre, clave, favoritos, frecuencia FROM dispositivos";
         public static final String SQL_SELECT_ULTIMA_IP = "SELECT id, ip, puerto, nombre, clave, favoritos, frecuencia FROM dispositivos ORDER BY id DESC LIMIT 1";
         public static final String SQL_SELECT_ALL_DEVICES_FAVORITES = "SELECT id, ip, puerto, nombre, clave, favoritos, frecuencia FROM dispositivos WHERE favoritos = 1";
