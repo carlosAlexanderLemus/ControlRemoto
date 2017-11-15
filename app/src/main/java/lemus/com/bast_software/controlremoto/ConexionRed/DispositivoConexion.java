@@ -39,6 +39,100 @@ public class DispositivoConexion {
     public static final int MODIFICACION_EXITOSA = 7;
     public static final int FALLO_AL_MODIFICAR = 8;
 
+    public static void EliminarDispositvoAlmacenado(Context context, DispositivosIP dispositivosIp)
+    {
+        if (HayDispositivoGuardado(context, dispositivosIp))
+        {
+            // Eliminamos el dispositivo
+            EliminarRecordarDispositivo(context);
+        }
+    }
+
+    public static DispositivosIP ObtenerDispositivoARecordar(Context context)
+    {
+        // Obtenemos los dispositivos IP
+        DispositivosIP dispositivosIP = null;
+
+        try
+        {
+            // Obtenemos el ID del dispositivo a conectar
+            int id_dispositivo = ObtenerIDDelDispositivo(context);
+
+            // Si poseemos algun dispositivo
+            if (id_dispositivo > 0)
+            {
+                // Obtenemos la base de datos
+                String base = context.getResources().getString(R.string.base_de_datos);
+
+                // Obtenemos los datos
+                SQLDispositivos sqlDispositivos = new SQLDispositivos(context, base, null, version);
+
+                // Obtenemos la base de datos para escribir en ella
+                SQLiteDatabase db = sqlDispositivos.getReadableDatabase();
+
+                // Obtenemos los datos
+                Cursor cursor = db.rawQuery(SQLDispositivos.ObtenerDispositivoPorID(id_dispositivo), null);
+
+                // Si hay datos
+                if (cursor.moveToFirst())
+                {
+                    // Obtenemos la informacion del primer resultado
+                    int _id = cursor.getInt(0);
+                    String _ip = cursor.getString(1);
+                    String _puerto = cursor.getString(2);
+                    String _nombre = cursor.getString(3);
+                    String _clave = cursor.getString(4);
+                    int _favoritos = cursor.getInt(5);
+                    int _frecuencia = cursor.getInt(6);
+
+                    dispositivosIP = new DispositivosIP(_id, _ip, Integer.parseInt(_puerto), _nombre, _clave, (_favoritos != 0), _frecuencia);
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Log.d("ErrorObtener", ex.getMessage());
+        }
+
+        // Devolvemos los dispositivos IP
+        return dispositivosIP;
+    }
+
+    // Obtenemos el ID del dispositvo
+    public static int ObtenerIDDelDispositivo(Context context)
+    {
+        // Obtenemos los dispositivos IP
+        int id_dispocitivo = -1;
+
+        try
+        {
+            // Obtenemos la base de datos
+            String base = context.getResources().getString(R.string.base_de_datos);
+
+            // Obtenemos los datos
+            SQLRecordarDispositivo sqlRecordarDispositivo = new SQLRecordarDispositivo(context, base, null, version);
+
+            // Obtenemos la base de datos para escribir en ella
+            SQLiteDatabase db = sqlRecordarDispositivo.getReadableDatabase();
+
+            // Obtenemos los datos
+            Cursor cursor = db.rawQuery(SQLRecordarDispositivo.SQL_OBTENER_ID_DEL_DISPOSITIVO, null);
+
+            // Si hay datos
+            if (cursor.moveToFirst())
+                // Obtenemos la informacion del primer resultado
+                id_dispocitivo = cursor.getInt(0);
+        }
+        catch (Exception ex)
+        {
+            Log.d("ErrorObtener", ex.getMessage());
+        }
+
+        // Devolvemos los dispositivos IP
+        return id_dispocitivo;
+    }
+
     // Guardamos el dispositivo
     public static boolean RecordarElDispositivoActual(Context context)
     {
@@ -129,6 +223,37 @@ public class DispositivoConexion {
             resultado = false;
         }
 
+        return resultado;
+    }
+
+    public static boolean HayDispositivoGuardado(Context context, DispositivosIP dispositivosIP)
+    {
+        // Repuesta
+        boolean resultado = false;
+
+        try
+        {
+            // Obtenemos la base de datos
+            String base = context.getResources().getString(R.string.base_de_datos);
+
+            // Obtenemos los datos
+            SQLRecordarDispositivo sqlRecordarDispositivo = new SQLRecordarDispositivo(context, base, null, version);
+
+            // Obtenemos la base de datos para escribir en ella
+            SQLiteDatabase db = sqlRecordarDispositivo.getReadableDatabase();
+
+            // Obtenemos los datos
+            Cursor cursor = db.rawQuery(SQLRecordarDispositivo.SaberSiElDispositivoEsRecordable(dispositivosIP.getId()), null);
+
+            // Si posee datos
+            resultado = cursor.moveToFirst();
+        }
+        catch (Exception ex)
+        {
+            Log.d("ErrorObtener", ex.getMessage());
+        }
+
+        // Damos la repuesta
         return resultado;
     }
 
@@ -942,6 +1067,13 @@ public class DispositivoConexion {
         public static final String SQL_OBTENER_TODOS_LOS_DISPOSITIVO = "SELECT id, id_dispositivo FROM recordar_dispositivo";
         public static final String SQL_ELIMINAR_TODOS_LOS_DISPOSITIVOS = "DELETE FROM recordar_dispositivo";
 
+        public static final String SQL_OBTENER_ID_DEL_DISPOSITIVO = "SELECT id_dispositivo FROM recordar_dispositivo ORDER BY id DESC LIMIT 1";
+
+        public static String SaberSiElDispositivoEsRecordable(int id)
+        {
+            return "SELECT id, id_dispositivo FROM recordar_dispositivo WHERE id_dispositivo=" + id;
+        }
+
         public static String GuardarDispositivo(int id)
         {
             return "INSERT INTO recordar_dispositivo (id_dispositivo) VALUES (" + id + ")";
@@ -992,6 +1124,11 @@ public class DispositivoConexion {
         public static String ObtenerFrecuencia(int id)
         {
             return "SELECT frecuencia FROM dispositivos WHERE id="+id;
+        }
+
+        public static String ObtenerDispositivoPorID(int id)
+        {
+            return "SELECT id, ip, puerto, nombre, clave, favoritos, frecuencia FROM dispositivos WHERE id="+id;
         }
 
         public static String InsertarNuevoDispositivo(String IP, String Puerto, String Nombre, String Clave)

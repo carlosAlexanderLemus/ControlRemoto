@@ -453,6 +453,7 @@ public class DeviceListViewHolder extends RecyclerView.ViewHolder implements Vie
                 btn_eliminar_desconectar.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
                         // Nos desconectamos
                         deviceListFragment.ObtenerFragmentPadre().DesconectarConEliminacion(dispositivosIP);
                         // Quitamos el coso

@@ -1,27 +1,129 @@
 package lemus.com.bast_software.controlremoto;
 
 import android.app.FragmentManager;
+import android.app.ProgressDialog;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import lemus.com.bast_software.controlremoto.ConexionRed.ActuadorDeTexto;
+import lemus.com.bast_software.controlremoto.ConexionRed.DispositivoConexion;
+import lemus.com.bast_software.controlremoto.ConexionRed.InformacionConexion;
+import lemus.com.bast_software.controlremoto.ConexionRed.ResultadoTexto;
 import lemus.com.bast_software.controlremoto.ConexionRed.Servidores;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+
+    // Metodo para la conexion
+    private void ConectarConElDispositivo(final DispositivosIP dispositivoIp, final ProgressDialog progress)
+    {
+        final Servidores servidor = new Servidores(this);
+        servidor.establecerActuadorDeTexto(new ActuadorDeTexto() {
+            @Override
+            public void RecibirMensaje(ResultadoTexto resultado) {
+                // Obtenemos todos los posibles resultados
+                switch (resultado.TipoDeAccion())
+                {
+                    case InformacionConexion.MOTIVOCONEXION_REPUESTAEXITOSA:
+                        DispositivoConexion.EstablecerDispositivoActual(dispositivoIp);
+                        Toast.makeText(MainActivity.this, "Conexion exitosa", Toast.LENGTH_SHORT).show();
+                        break;
+
+                    default:
+                        Toast.makeText(MainActivity.this, "No se ha podido establecer la conexion", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+                // De cualquier caso lo quitamos
+                progress.dismiss();
+                // Esperemos que no haya error :"v
+                servidor.onDestroy();
+            }
+        });
+        servidor.iniciarServidor();
+        // Enviamos mensaje
+        DispositivoConexion.ConectarConElDispositivo(this, dispositivoIp);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // En caso que tengamos algun dispositivo a almacenar
+        if (DispositivoConexion.HayDispositivoGuardado(this))
+        {
+            // Obtenemos el dispositivo actual
+            final DispositivosIP dispositivosIP = DispositivoConexion.ObtenerDispositivoARecordar(this);
+
+            // Comprobamos que no sea nulo
+            if (dispositivosIP != null)
+            {
+                // Preguntamoa que si quera conectar
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                View layout = getLayoutInflater().inflate(R.layout.select_device_item_layout, null);
+
+                // Obtenemos los txt
+                final TextView tv_name = (TextView)layout.findViewById(R.id.tv_selected_name_device);
+                final TextView tv_ip = (TextView)layout.findViewById(R.id.tv_selected_ip_device);
+
+                // Botones
+                Button btn_aceptar = (Button)layout.findViewById(R.id.btn_aceptar_conexion);
+                Button btn_cancelar = (Button)layout.findViewById(R.id.btn_cancelar_conexion);
+
+                // Ingresamos los valores
+                tv_name.setText(dispositivosIP.getNombre());
+                tv_ip.setText(dispositivosIP.getIP());
+
+                // Creamos el dialogo
+                builder.setView(layout);
+                final AlertDialog dialog = builder.create();
+
+                // Manejamos los botones
+                btn_aceptar.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Iniciamos el progress bar
+                        final ProgressDialog progress = new ProgressDialog(MainActivity.this);
+                        progress.setCancelable(false);
+                        progress.setTitle("Conexion con el servidor");
+                        progress.setMessage("Esperando repuesta...");
+                        progress.setMax(100);
+                        progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                        progress.setCanceledOnTouchOutside(false);
+
+                        progress.show();
+                        dialog.dismiss();
+
+                        // Activamos la conexion
+                        ConectarConElDispositivo(dispositivosIP.Clonar(), progress);
+                    }
+                });
+
+                btn_cancelar.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Quitamos el dialogo
+                        dialog.dismiss();
+                    }
+                });
+
+                // Mostramos el dialog
+                dialog.show();
+            }
+        }
 
         // Obtenemos las referencia de aquellos elementos del diseño
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);

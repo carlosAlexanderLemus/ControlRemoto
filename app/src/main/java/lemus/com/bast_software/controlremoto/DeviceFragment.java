@@ -129,12 +129,15 @@ public class DeviceFragment extends Fragment{
 
     public void EliminarDispositivo(int tipo_accion, DispositivosIP dispositivosIP)
     {
+        // Eliminamos el recordadorio
+        DispositivoConexion.EliminarDispositvoAlmacenado(getContext(), dispositivosIP.Clonar());
         deviceListViewPageAdapter.EliminarDispositivo(tipo_accion, dispositivosIP);
-        Log.d("TipoDeAccion", "Tipo: "+tipo_accion);
     }
 
     public void EliminarDispositivo(DispositivosIP dispositivosIP)
     {
+        // Eliminamos el recordadorio
+        DispositivoConexion.EliminarDispositvoAlmacenado(getContext(), dispositivosIP.Clonar());
         deviceListViewPageAdapter.EliminarDispositivo(dispositivosIP);
     }
 
@@ -367,6 +370,10 @@ public class DeviceFragment extends Fragment{
         cb_recordar_dispositivo = (CheckBox)view.findViewById(R.id.cb_recordar_dispositivo);
         iv_favority_state = (ImageView)view.findViewById(R.id.iv_favority_state);
         iv_disconect_device_selected = (ImageView)view.findViewById(R.id.iv_disconect_device_selected);
+
+        // Informacion por defecto
+        EstablecerInformacionPorConexion();
+
         // Iniciamos el dispositivo
         deviceListViewPageAdapter = new DeviceListViewPageAdapter(this);
         viewPager.setAdapter(deviceListViewPageAdapter);
@@ -493,7 +500,7 @@ public class DeviceFragment extends Fragment{
                         servidor.establecerActuadorDeTexto(new ActuadorDeTexto() {
                             @Override
                             public void RecibirMensaje(ResultadoTexto resultado) {
-                                Toast.makeText(getContext(), "Puta recibio el mensaje", Toast.LENGTH_SHORT).show();
+
                                 // Probamos los distintos casos
                                 switch (resultado.TipoDeAccion())
                                 {
