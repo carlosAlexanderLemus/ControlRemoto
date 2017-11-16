@@ -27,6 +27,9 @@ import lemus.com.bast_software.controlremoto.ConexionRed.Servidores;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
+    // Informacion sobre el menu precionado
+    private int id_option_used = -1;
+
     // Metodo para la conexion
     private void ConectarConElDispositivo(final DispositivosIP dispositivoIp, final ProgressDialog progress)
     {
@@ -179,19 +182,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Obtemos el id del item
         int id = item.getItemId();
 
-        // Comprobamos que elementos es
-        switch (id)
-        {
-            case R.id.item_device:
-                // Obtenemos la instancia del fragment
-                DeviceFragment devicefragment = new DeviceFragment();
-                // Fragmento
-                FragmentTransaction fragmenttransaction = getSupportFragmentManager().beginTransaction();
-                // Preparamos el contenedor
-                fragmenttransaction.replace(R.id.contenedor_fragment, devicefragment);
-                // Validamos el cambio
-                fragmenttransaction.commit();
-                break;
+        // Comprobamos que el item no este usado
+        if  (id != id_option_used) {
+            // Guardamos el id actual
+            id_option_used = id;
+
+            // Comprobamos que elementos es
+            switch (id) {
+                case R.id.item_device:
+                    // Obtenemos la instancia del fragment
+                    DeviceFragment devicefragment = new DeviceFragment();
+                    // Fragmento
+                    FragmentTransaction fragmenttransaction = getSupportFragmentManager().beginTransaction();
+                    // Preparamos el contenedor
+                    fragmenttransaction.replace(R.id.contenedor_fragment, devicefragment);
+                    // Validamos el cambio
+                    fragmenttransaction.commit();
+                    break;
+
+                case R.id.item_play_video:
+                    PlayComputerStreamFragment playComputerStreamFragment = new PlayComputerStreamFragment();
+                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction.replace(R.id.contenedor_fragment, playComputerStreamFragment);
+                    fragmentTransaction.commit();
+                    break;
+            }
         }
 
         // Cerrramos el panel

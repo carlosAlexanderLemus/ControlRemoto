@@ -5,5 +5,10 @@
             android:id="@+id/item_device"
             android:icon="@mipmap/ic_device_connected"
             android:title="@string/option_device" />
+
+        <item
+            android:id="@+id/item_play_video"
+            android:icon="@mipmap/ic_player_video_computer"
+            android:title="@string/option_play_computer"/>
     </group>
 </menu>

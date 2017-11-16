@@ -355,6 +355,36 @@ public class DispositivoConexion {
         }
     }
 
+    public static void SolicitarVideoAlDispositivoActual(Context context)
+    {
+        if (HayConexionEstablecida())
+        {
+            // Obtenemos una copia del dispositivo actual
+            DispositivosIP dispositivosIP = dispositivo_actual.Clonar();
+
+            // Creamos el coso de cliente
+            Clientes cliente = new Clientes(dispositivosIP.getIP(), dispositivosIP.getPuerto());
+
+            // En viamos el mensaje
+            cliente.EnviarMensajeDeTexto(InformacionConexion.MOTIVOCONEXION_SOLICITUD_VIDEO);
+        }
+    }
+
+    public static void SolicitarCancelacionDelVideoAlDispositivoActual(Context context)
+    {
+        if (HayConexionEstablecida())
+        {
+            // Obtenemos una copia del dispositivo actual
+            DispositivosIP dispositivosIP = dispositivo_actual.Clonar();
+
+            // Creamos el coso de cliente
+            Clientes cliente = new Clientes(dispositivosIP.getIP(), dispositivosIP.getPuerto());
+
+            // En viamos el mensaje
+            cliente.EnviarMensajeDeTexto(InformacionConexion.MOTIVOCONEXION_SOLICITUD_CANCELAR_VIDEO);
+        }
+    }
+
     public static void ConectarConElDispositivo(Context context, DispositivosIP dispositivosIP)
     {
         // Creamos el coso de cliente

@@ -4,6 +4,7 @@
     <string name="option_device">Dispositivos</string>
     <string name="option_add_device">Añadir dispositivo</string>
     <string name="option_remenber_device">Recordar este dispositivo</string>
+    <string name="option_play_computer">Ver dispositivo</string>
 
     <string name="title_new_device">Nuevo dispositivo</string>
 
@@ -45,4 +46,5 @@
 
     <string name="delete_disconect">Eliminar y desconectar</string>
 
+    <string name="ruler_mouse">Mouse-Pad (Poder Nigga)</string>
 </resources>
