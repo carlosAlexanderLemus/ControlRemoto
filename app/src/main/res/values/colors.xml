@@ -9,4 +9,5 @@
     <color name="buttomBackgroud">#c7444a</color>
     <color name="colorAcentTab">#fffc23</color>
     <color name="itemColorBackground">#012e33</color>
+    <color name="colorRedInformation">#840315</color>
 </resources>

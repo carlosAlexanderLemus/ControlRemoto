@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     tools:context="lemus.com.bast_software.controlremoto.PlayComputerStreamFragment"
     android:orientation="vertical"
-    android:weightSum="1"
+    android:weightSum="2"
     >
 
     <!-- TODO: Update blank fragment layout -->
@@ -15,44 +15,51 @@
         android:id="@+id/iv_video_stream"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight=".5"
+        android:layout_weight=".6"
         android:adjustViewBounds="false"
         android:cropToPadding="false"
-        android:scaleType="fitCenter"
+        android:scaleType="center"
         app:srcCompat="@mipmap/ic_player_video_computer" />
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight=".5"
-        android:background="@android:color/darker_gray">
-
-        <TextView
-            android:id="@+id/tv_mouse_pad"
-            style="@style/TextViewMouse"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight=".4"
-            android:text="@string/ruler_mouse" />
+        android:layout_weight="1.4"
+        android:background="@color/colorRedInformation"
+        android:orientation="vertical">
 
         <LinearLayout
-            android:layout_weight="1.6"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
             android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/btn_left"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1" />
+            <ImageView
+                android:id="@+id/iv_switch_video"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:adjustViewBounds="true"
+                android:cropToPadding="true"
+                android:scaleType="centerInside"
+                app:srcCompat="@mipmap/ic_switch_video_off" />
 
-            <Button
-                android:id="@+id/btn_rigth"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1" />
+            <ImageView
+                android:id="@+id/iv_action_video"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:adjustViewBounds="true"
+                app:srcCompat="@mipmap/ic_play_video" />
+
+            <ImageView
+                android:id="@+id/iv_download_video"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:adjustViewBounds="true"
+                app:srcCompat="@mipmap/ic_download_video" />
         </LinearLayout>
+
     </LinearLayout>
 </LinearLayout>

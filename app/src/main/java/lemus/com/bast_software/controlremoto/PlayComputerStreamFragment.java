@@ -35,6 +35,11 @@ public class PlayComputerStreamFragment extends Fragment {
     // Bitmap
     private ImageView iv_video_stream;
 
+    // Imagenes de accion
+    private ImageView iv_switch_video;
+    private ImageView iv_action_video;
+    private ImageView iv_download_video;
+
     public PlayComputerStreamFragment() {
         // Required empty public constructor
     }
@@ -45,11 +50,17 @@ public class PlayComputerStreamFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_play_computer_stream, container, false);
 
-        // Obtenemos la imagen
+        // Obtenemos las imagenes
         iv_video_stream = (ImageView)view.findViewById(R.id.iv_video_stream);
+        iv_switch_video = (ImageView)view.findViewById(R.id.iv_switch_video);
+        iv_action_video = (ImageView)view.findViewById(R.id.iv_action_video);
+        iv_download_video = (ImageView)view.findViewById(R.id.iv_download_video);
 
         // Comprobamos que no haya alguna conexion
         if (!DispositivoConexion.HayConexionEstablecida()){
+            // Ajustamos el picture
+            iv_video_stream.setScaleType(ImageView.ScaleType.CENTER);
+
             // Mostramos un mensaje de error
             AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
             builder.setTitle("Error inesperado")
@@ -59,6 +70,9 @@ public class PlayComputerStreamFragment extends Fragment {
 
         }
         else{
+            // Ajustamos la imagen
+            iv_video_stream.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
             // En caso que si estemos conectados
             servidoresStream = new ServidoresStream(getActivity());
 
@@ -92,8 +106,11 @@ public class PlayComputerStreamFragment extends Fragment {
 
     @Override
     public void onDestroy() {
-        // Cancelams el servidor
-        servidoresStream.onDestroy();
+        if  (servidoresStream != null)
+        {
+            // Cancelams el servidor
+            servidoresStream.onDestroy();
+        }
         // Solicitamos el coso
         DispositivoConexion.SolicitarCancelacionDelVideoAlDispositivoActual(getContext());
         // Por defecto
